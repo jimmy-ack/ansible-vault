@@ -34,4 +34,5 @@
 
 - name: Compute if a vault upgrade is required
   set_fact:
-    vault_upgrade_required: "{{ vault_installation_check.stdout != vault_version }}"
+    vault_upgrade_required: "{{ vault_install_check.stdout != vault_version }}"
+  when: vault_install_required is defined and vault_install_required == false

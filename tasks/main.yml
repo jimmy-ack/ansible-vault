@@ -1,2 +1,17 @@
 ---
-# tasks file for .
+
+  # Checking first if environment is compatible with this role and if vault is already installed on nodes
+- name: Ensure compatibility with this role and checking if vault is already installed
+  include: asserts.yml
+
+# Ensure requirements are in installed on nodes
+- name: Install vault requirements
+  include: requirements.yml
+  when: vault_install_required == true
+
+- name: Install vault
+  include: install.yml
+  when: vault_install_required == true
+
+- name: Configure vault
+  include: configure.yml

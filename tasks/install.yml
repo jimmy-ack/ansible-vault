@@ -1,0 +1,15 @@
+---
+- name: Ensure Vault group is created
+  become: true
+  group:
+    name: "{{ vault_group }}"
+    state: present
+
+- name: Ensure Vault user is created
+  become: true
+  user:
+    name: "{{ vault_user }}"
+    comment: "{{ vault_user_comment }}"
+    group: "{{ vault_group }}"
+    system: true
+

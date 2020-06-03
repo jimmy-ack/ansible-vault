@@ -1,2 +1,65 @@
 ---
-# defaults file for .
+# ---------------------------------------------------------------------------
+# Core variables
+# ---------------------------------------------------------------------------
+
+# Package variables
+vault_version: "1.4.0"
+vault_os: "{{ ansible_system|lower }}"
+vault_architecture: "amd64"
+vault_pkg: "vault_{{ vault_version }}_{{ vault_os }}_{{ vault_architecture }}.zip"
+vault_shasums: "vault_{{ vault_version }}_SHA256SUMS"
+vault_zip_url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_{{ vault_os }}_{{ vault_architecture }}.zip"
+vault_checksum_file_url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version}}_SHA256SUMS"
+
+# System user and group
+vault_user: "vault"
+vault_group: "bin"
+vault_user_comment: "vault user"
+
+# Logging
+vault_enable_logrotate: true
+vault_logrotate_freq: 7
+vault_logrotate_template: "vault_logrotate.j2"
+
+# Paths
+vault_bin_path: "/usr/local/bin"
+vault_config_path: "/etc/vault.d"
+vault_plugin_path: "/usr/local/lib/vault/plugins"
+vault_data_path: "/var/vault"
+vault_log_path: "/var/log/vault"
+vault_run_path: "/var/run/vault"
+
+# ---------------------------------------------------------------------------
+# Initialization and startup script templates
+# ---------------------------------------------------------------------------
+
+vault_debian_init_template: "vault_service_debian_init.j2"
+vault_systemd_template: "vault_service_systemd.j2"
+
+# ---------------------------------------------------------------------------
+# Vault variables
+# ---------------------------------------------------------------------------
+
+vault_cluster_name: "dc1"
+vault_datacenter: "dc1"
+vault_log_level: "info"
+vault_ui: true
+vault_port: 8200
+vault_cluster_port: 8201
+vault_main_config: "{{ vault_config_path }}/vault_main.hcl"
+vault_main_configuration_template: vault_main_configuration.hcl.j2
+
+# ---------------------------------------------------------------------------
+# Raft backend
+# ---------------------------------------------------------------------------
+
+vault_iface: "{{ lookup('env','VAULT_IFACE') | default(ansible_default_ipv4.interface, true) }}"
+vault_address: "{{ hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address'] }}"
+vault_cluster_address: "{{ vault_address }}:{{ vault_cluster_port }}"
+vault_protocol: "{% if vault_tls_disable %}http{% else %}https{% endif %}"
+vault_cluster_disable: false
+vault_cluster_addr: "{{ vault_protocol }}://{{ vault_cluster_address }}"
+#vault_redirect_address: "<lb ip address>"
+vault_api_addr: "{{ vault_protocol }}://{{ vault_redirect_address | default(hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address']) }}:{{ vault_port }}"
+vault_tls_disable: "true"

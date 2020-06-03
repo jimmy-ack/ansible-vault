@@ -1,12 +1,25 @@
-Role Name
+ansible-lss-vault
 =========
 
-A brief description of the role goes here.
+Since version 1.4 of Hashicorp Vault, Backend Raft for Cluster is available and by the way, Vault become a statefull workload.
 
-Requirements
-------------
+The goal of this project is to facility maintain in operational condition a Vault Cluster with Ansible while there is no autopilot on Vault Raft Backend (unlike in Consul).
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This Ansible Role will for each host :
+
+- Download Vault, install or replace it
+- Replace HCL configuration file with templating
+- Reload Vault service with low perturbation as possible
+
+## Prerequisite
+
+For now, we only work with an instance which already met all OS, package dependancies with a first vault install like UserData, shell script, ansible or else. 
+The most import part is to have a correct inventory, for a replacement like destroy & replace, or even a fresh new cluster.
+Inventory need to have all the vault instance of the Raft cluster with their private IP and to know which will be the master node.
+
+## Role Usage
+
+You will need to handle by yourself backup and restore.
 
 Role Variables
 --------------

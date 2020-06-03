@@ -1,0 +1,18 @@
+---
+- name: Enable logrotate for vault
+  template:
+    src: "{{ vault_logrotate_template }}"
+    dest: /etc/logrotate.d/vault
+    owner: root
+    group: root
+    mode: 0644
+  when: vault_enable_logrotate | bool
+
+- name: Vault main configuration
+  template:
+    src: "{{ vault_main_configuration_template }}"
+    dest: "{{ vault_main_config }}"
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: "0400"
+  notify: Restart vault

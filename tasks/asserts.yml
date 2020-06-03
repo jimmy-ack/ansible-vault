@@ -1,0 +1,38 @@
+---
+
+# Checking distribution and OS compatibility
+- name: Ensure Linux distribution is compatible with this role
+  fail:
+    msg: "{{ ansible_distribution }} is not supported by this role"
+  when: ansible_distribution not in ['CentOS', 'Debian']
+
+- name: Ensure Centos or RHEL version is a recent version
+  fail:
+    msg: "{{ ansible_distribution_version }} is not a supported version of {{ ansible_distribution }} for this role"
+  when:
+    - ansible_distribution in ['RedHat', 'CentOS']
+    - ansible_distribution_version is version(7, '<')
+
+- name: Ensure Debian version is a recent version
+  fail:
+    msg: "{{ ansible_distribution_version }} is not a supported version of {{ ansible_distribution }} for this role"
+  when:
+    - ansible_distribution == "Debian"
+    - (ansible_distribution_version != 'buster/sid') and (ansible_distribution_version is version(8.5, '<'))
+
+# Checking if vault already installed in the expected version
+- name: Check if vault is already installed
+  command: vault version
+  register: vault_install_check
+  changed_when: false
+  ignore_errors: true
+  check_mode: false
+
+- name: Compute if vault installation is required
+  set_fact:
+    vault_install_required: "{{ vault_install_check is failed }}"
+
+- name: Compute if a vault upgrade is required
+  set_fact:
+    vault_upgrade_required: "{{ vault_install_check.stdout != vault_version }}"
+  when: vault_install_required is defined and vault_install_required == false

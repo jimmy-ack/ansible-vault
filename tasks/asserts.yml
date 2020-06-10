@@ -4,7 +4,7 @@
 - name: Ensure Linux distribution is compatible with this role
   fail:
     msg: "{{ ansible_distribution }} is not supported by this role"
-  when: ansible_distribution not in ['CentOS', 'Debian']
+  when: ansible_distribution not in ['RedHat', 'CentOS', 'Debian', 'Amazon']
 
 - name: Ensure Centos or RHEL version is a recent version
   fail:
@@ -12,6 +12,13 @@
   when:
     - ansible_distribution in ['RedHat', 'CentOS']
     - ansible_distribution_version is version(7, '<')
+
+- name: Ensure Amazon version is a recent version
+  fail:
+    msg: "{{ ansible_distribution_version }} is not a supported version of {{ ansible_distribution }} for this role"
+  when:
+    - ansible_distribution == 'Amazon'
+    - ansible_distribution_version is version(2, '<')
 
 - name: Ensure Debian version is a recent version
   fail:

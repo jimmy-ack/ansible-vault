@@ -52,6 +52,20 @@
     mode: "0755"
   notify: Restart vault
 
+- name: Install autocomplete for vault user
+  #shell: "su {{ vault_user }} -c 'vault -autocomplete-install'"
+  shell: "{{ vault_bin_path }}/vault -autocomplete-install"
+  args:
+    executable: /bin/bash
+  become_user: "{{ vault_user }}"
+  ignore_errors: yes
+
+- name: Insert http(s) export in dotfile
+  lineinfile:
+    path: "/home/{{ vault_user }}/.bashrc"
+    line: "export VAULT_ADDR='{{ vault_tls_disable | ternary('http', 'https') }}://{{ inventory_hostname }}:{{ vault_port }}'"
+    create: true              
+
 - name: Check Vault mlock capability
   command: "setcap cap_ipc_lock=+ep {{ vault_bin_path }}/vault"
   changed_when: false 

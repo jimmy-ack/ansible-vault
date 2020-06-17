@@ -12,7 +12,7 @@
 # Installing vault on nodes
 - name: Ensure vault is installed
   include: install.yml
-  when: vault_upgrade_required is defined and vault_upgrade_required == false
+  when: vault_upgrade_required is not defined
 
 # Configuring vault
 - name: Ensure vault configuration has been done as expected

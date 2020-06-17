@@ -64,17 +64,14 @@
   lineinfile:
     path: "/home/{{ vault_user }}/.bashrc"
     line: "export VAULT_ADDR='{{ vault_tls_disable | ternary('http', 'https') }}://{{ inventory_hostname }}:{{ vault_port }}'"
-    create: true            
+    create: true        
 
-- name: Check Vault mlock capability
-  command: "setcap cap_ipc_lock=+ep {{ vault_bin_path }}/vault"
-  changed_when: false
+- name: Set cap_ipc_lock=+ep on {{ vault_bin_path }}/vault
+  capabilities:
+    path: "{{ vault_bin_path }}/vault"
+    capability: cap_ipc_lock=+ep
+    state: present
   ignore_errors: true
-  register: vault_mlock_capability
-
-- name: Enable non root mlock capability
-  command: "setcap cap_ipc_lock=+ep {{ vault_bin_path }}/vault"
-  when: vault_mlock_capability is failed
 
 - name: Ensure vault directories have been created
   file:

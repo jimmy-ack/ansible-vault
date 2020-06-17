@@ -9,9 +9,8 @@
   when: vault_enable_logrotate | bool
 
 - name: Ensure remote vault configuration directory exists
-  file:
+  stat:
     path: "{{ vault_main_config }}"
-    state: directory
   register: vault_main_config_exists
 
 - name: Vault main configuration

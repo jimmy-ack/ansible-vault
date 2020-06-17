@@ -31,6 +31,7 @@
   get_url:
     url: "{{ vault_checksum_file_url }}"
     dest: "/tmp/vault/{{ vault_shasums }}"
+  when: vault_install_required == true
 
 - name: Get Vault package checksum
   shell: "grep {{ vault_pkg }} /tmp/vault/{{ vault_shasums }}"

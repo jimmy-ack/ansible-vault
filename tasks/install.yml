@@ -15,6 +15,7 @@
   file:
     path: /tmp/vault
     state: directory
+  when: vault_install_required == true
 
 - name: Ensure vault package checksum file is not present
   file:
@@ -34,6 +35,7 @@
 - name: Get Vault package checksum
   shell: "grep {{ vault_pkg }} /tmp/vault/{{ vault_shasums }}"
   register: vault_sha256
+  when: vault_install_required == true
 
 - name: "Download Vault"
   get_url:
@@ -41,6 +43,7 @@
     dest: "/tmp/vault/{{ vault_pkg }}"
     checksum: "sha256:{{ vault_sha256.stdout.split(' ')|first }}"
     timeout: "42"
+  when: vault_install_required == true
 
 - name: Unarchive Vault and install binary
   unarchive:
@@ -51,6 +54,7 @@
     group: "{{ vault_group }}"
     mode: "0755"
   notify: Restart vault
+  when: vault_install_required == true
 
 - name: Install autocomplete for vault user
   #shell: "su {{ vault_user }} -c 'vault -autocomplete-install'"
@@ -59,12 +63,13 @@
     executable: /bin/bash
   become_user: "{{ vault_user }}"
   ignore_errors: yes
+  when: vault_install_required == true
 
 - name: Insert http(s) export in dotfile
   lineinfile:
     path: "/home/{{ vault_user }}/.bashrc"
     line: "export VAULT_ADDR='{{ vault_tls_disable | ternary('http', 'https') }}://{{ inventory_hostname }}:{{ vault_port }}'"
-    create: true        
+    create: true
 
 - name: Set cap_ipc_lock=+ep on {{ vault_bin_path }}/vault
   capabilities:
@@ -72,6 +77,7 @@
     capability: cap_ipc_lock=+ep
     state: present
   ignore_errors: true
+  when: vault_install_required == true
 
 - name: Ensure vault directories have been created
   file:

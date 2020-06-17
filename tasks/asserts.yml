@@ -39,7 +39,11 @@
   set_fact:
     vault_install_required: "{{ vault_install_check is failed }}"
 
+- name: Compute target vault version
+  set_fact:
+    vault_target_version: "Vault v{{ vault_version }}"
+
 - name: Compute if a vault upgrade is required
   set_fact:
-    vault_upgrade_required: "{{ vault_install_check.stdout != vault_version }}"
-  when: vault_install_required is defined and vault_install_required == false
+    vault_upgrade_required: true
+  when: vault_install_required is defined and vault_install_required == false and vault_install_check.stdout != vault_target_version

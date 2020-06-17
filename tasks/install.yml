@@ -64,11 +64,11 @@
   lineinfile:
     path: "/home/{{ vault_user }}/.bashrc"
     line: "export VAULT_ADDR='{{ vault_tls_disable | ternary('http', 'https') }}://{{ inventory_hostname }}:{{ vault_port }}'"
-    create: true              
+    create: true            
 
 - name: Check Vault mlock capability
   command: "setcap cap_ipc_lock=+ep {{ vault_bin_path }}/vault"
-  changed_when: false 
+  changed_when: false
   ignore_errors: true
   register: vault_mlock_capability
 

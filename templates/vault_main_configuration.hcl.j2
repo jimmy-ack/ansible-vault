@@ -10,12 +10,16 @@ listener "tcp" {
   {% if not (vault_tls_disable | bool) -%}
   tls_cert_file = "{{ vault_tls_config_path }}/{{ vault_tls_cert_file }}"
   tls_key_file = "{{ vault_tls_config_path }}/{{ vault_tls_key_file }}"
+  {% if vault_tls_ca_file is defined -%}
   tls_client_ca_file="{{ vault_tls_config_path }}/{{ vault_tls_ca_file }}"
+  {% endif -%}
   tls_min_version  = "{{ vault_tls_min_version }}"
-  {% if vault_tls_cipher_suites is defined and vault_tls_cipher_suites -%}
+  {% if vault_tls_cipher_suites is defined -%}
   tls_cipher_suites = "{{ vault_tls_cipher_suites }}"
   {% endif -%}
+  {% if tls_prefer_server_cipher_suites is defined -%}
   tls_prefer_server_cipher_suites = "{{ vault_tls_prefer_server_cipher_suites }}"
+  {% endif -%}
   {% if (vault_tls_require_and_verify_client_cert | bool) -%}
   tls_require_and_verify_client_cert = "{{ vault_tls_require_and_verify_client_cert | bool | lower}}"
   {% endif -%}

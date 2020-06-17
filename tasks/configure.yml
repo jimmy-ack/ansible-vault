@@ -8,6 +8,12 @@
     mode: 0644
   when: vault_enable_logrotate | bool
 
+- name: Ensure remote vault configuration directory exists
+  file:
+    path: "{{ vault_main_config }}"
+    state: directory
+  register: vault_main_config_exists
+
 - name: Vault main configuration
   template:
     src: "{{ vault_main_configuration_template }}"
@@ -16,3 +22,4 @@
     group: "{{ vault_group }}"
     mode: "0400"
   notify: Restart vault
+  when: vault_main_config_exists is not failed

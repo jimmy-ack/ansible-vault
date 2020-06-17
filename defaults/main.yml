@@ -53,6 +53,7 @@ vault_main_configuration_template: vault_main_configuration.hcl.j2
 # ---------------------------------------------------------------------------
 # Raft backend
 # ---------------------------------------------------------------------------
+
 vault_raft_node_id: "{{ ansible_fqdn }}"
 vault_iface: "{{ lookup('env','VAULT_IFACE') | default(ansible_default_ipv4.interface, true) }}"
 vault_address: "{{ hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address'] }}"

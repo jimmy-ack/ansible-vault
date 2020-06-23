@@ -79,3 +79,4 @@ vault_cluster_disable: false
 vault_cluster_addr: "{{ vault_protocol }}://{{ vault_cluster_address }}"
 #vault_redirect_address: "<lb ip address>"
 vault_api_addr: "{{ vault_protocol }}://{{ vault_redirect_address | default(hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address']) }}:{{ vault_port }}"
+vault_auto_unseal: false

@@ -16,7 +16,7 @@
 
 # Upgrade vault on nodes if the upgrade is required
 - name: Upgrade vault to version {{ vault_version }}
-  include: install.yml
+  include: upgrade.yml
   when: vault_upgrade_required is defined and vault_upgrade_required == true
 
 # Configuring vault only if install is required or if auto unseal is enabled

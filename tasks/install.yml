@@ -101,33 +101,38 @@
     group: "{{ vault_group }}"
   when: vault_tls_disable == "false"
 
-# - name: Ensure Vault SSL certificate and key are on the server
-#   copy:
-#     src: "{{ item.src }}"
-#     dest: "{{ item.dest }}"
-#     owner: "{{ vault_user }}"
-#     group: "{{ vault_group }}"
-#     mode: "{{ item.mode }}"
-#   with_items:
-#     - src: "{{ vault_tls_src_files }}/{{ vault_tls_cert_file }}"
-#       dest: "{{ vault_tls_config_path }}/{{ vault_tls_cert_file }}"
-#       mode: "0644"
-#     - src: "{{ vault_tls_src_files }}/{{ vault_tls_key_file }}"
-#       dest: "{{ vault_tls_config_path }}/{{ vault_tls_key_file }}"
-#       mode: "0600"
-#   when: vault_tls_disable == "false"
-
 - block: 
-  - name: Vault SSL Certificate and Key
-    become: true
+  # - name: Vault SSL Certificate and Key
+  #   become: true
+  #   copy:
+  #     remote_src: "{{ vault_tls_files_remote_src }}"
+  #     src: "{{ item.src }}"
+  #     dest: "{{ item.dest }}"
+  #     owner: "{{ vault_user }}"
+  #     group: "{{ vault_group }}"
+  #     mode: "{{ item.mode }}"
+  #   loop: "{{ vault_tls_files }}"
+
+  - name: Ensure Vault SSL certificate and key are on the server
     copy:
-      remote_src: "{{ vault_tls_files_remote_src }}"
       src: "{{ item.src }}"
       dest: "{{ item.dest }}"
       owner: "{{ vault_user }}"
       group: "{{ vault_group }}"
       mode: "{{ item.mode }}"
-    loop: "{{ vault_tls_files }}"
+    with_items:
+      - src: "{{ vault_tls_src_files }}/{{ vault_tls_ca_file }}"
+        dest: "{{ vault_tls_config_path }}/{{ vault_tls_ca_file }}"
+        mode: "0644"
+        - src: "{{ vault_tls_src_files }}/{{ vault_tls_ca_file }}"
+        dest: "{{ vault_tls_cert_key_store }}/{{ vault_tls_ca_file }}"
+        mode: "0644"
+      - src: "{{ vault_tls_src_files }}/{{ vault_tls_cert_file }}"
+        dest: "{{ vault_tls_config_path }}/{{ vault_tls_cert_file }}"
+        mode: "0644"
+      - src: "{{ vault_tls_src_files }}/{{ vault_tls_key_file }}"
+        dest: "{{ vault_tls_config_path }}/{{ vault_tls_key_file }}"
+        mode: "0600"
 
   - name: Add TLS CA certificate to OS keystore
     command: update-ca-trust extract

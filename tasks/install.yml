@@ -93,25 +93,13 @@
     - "{{ vault_log_path }}"
     - "{{ vault_run_path }}"
 
-- name: Ensure TLS directory has been created
-  file:
-    dest: "{{ vault_tls_config_path }}"
-    state: directory
-    owner: "{{ vault_user }}"
-    group: "{{ vault_group }}"
-  when: vault_tls_disable == "false"
-
-- block: 
-  # - name: Vault SSL Certificate and Key
-  #   become: true
-  #   copy:
-  #     remote_src: "{{ vault_tls_files_remote_src }}"
-  #     src: "{{ item.src }}"
-  #     dest: "{{ item.dest }}"
-  #     owner: "{{ vault_user }}"
-  #     group: "{{ vault_group }}"
-  #     mode: "{{ item.mode }}"
-  #   loop: "{{ vault_tls_files }}"
+- block:
+  - name: Ensure TLS directory has been created
+    file:
+      dest: "{{ vault_tls_config_path }}"
+      state: directory
+      owner: "{{ vault_user }}"
+      group: "{{ vault_group }}"
 
   - name: Ensure Vault SSL certificate and key are on the server
     copy:

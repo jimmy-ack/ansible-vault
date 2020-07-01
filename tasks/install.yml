@@ -117,7 +117,7 @@
 #       mode: "0600"
 #   when: vault_tls_disable == "false"
 
--block: 
+- block: 
   - name: Vault SSL Certificate and Key
     become: true
     copy:

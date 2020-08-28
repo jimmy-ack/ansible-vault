@@ -1,0 +1,34 @@
+---
+### ALL ###
+- name: set facts used no matter the environment
+  block:
+    - name: set vault leader hostname
+      set_fact:
+        vault_leader_hostname: "{{ hostvars['vault-0']['ansible_facts']['fqdn'] }}"
+        vault_port: 8200
+        vault_key_file: /etc/vault.d/key.txt
+
+### LZLAB ###
+- name: set facts for lzlab
+  block:
+    - name: set dns_suffix
+      set_fact:
+        env_dns_suffix: vault.lzlab.cloud
+  when: deployment_env == "lzlab"
+
+### LZDEV ###
+- name: set facts for lzdev
+  block:
+    - name: set dns_suffix
+      set_fact:
+        env_dns_suffix: vault.lzdev.cloud
+  when: deployment_env == "lzdev"
+
+### PRO ###
+- name: set facts for pro
+  block:
+    - name: set dns_suffix
+      set_fact:
+        env_dns_suffix: vault.accor.net
+  when: deployment_env == "pro"
+  

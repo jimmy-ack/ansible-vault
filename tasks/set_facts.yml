@@ -6,31 +6,32 @@
       set_fact:
         vault_port: 8200
         vault_key_file: /etc/vault.d/key.txt
-
-### LZLAB ###
-- name: set facts for lzlab
-  block:
-    - name: set dns_suffix
-      set_fact:
-        env_dns_suffix: vault.lzlab.cloud
+        vault_leader_ip_addr: "{{ hostvars['vault-0.vault.lzlab.cloud']['ansible_eth0']['ipv4']['address'] }}"
         vault_leader_hostname: "{{ hostvars['vault-0.vault.lzlab.cloud']['ansible_facts']['fqdn'] }}"
-  when: deployment_env == "lzlab"
 
-### LZDEV ###
-- name: set facts for lzdev
-  block:
-    - name: set dns_suffix
-      set_fact:
-        env_dns_suffix: vault.lzdev.cloud
-        vault_leader_hostname: "{{ hostvars['vault-0.vault.lzdev.cloud']['ansible_facts']['fqdn'] }}"
-  when: deployment_env == "lzdev"
+# ### LZLAB ###
+# - name: set facts for lzlab
+#   block:
+#     - name: set dns_suffix
+#       set_fact:
+#         env_dns_suffix: vault.lzlab.cloud
+#         vault_leader_hostname: "{{ hostvars['vault-0.vault.lzlab.cloud']['ansible_facts']['fqdn'] }}"
+#   when: deployment_env == "lzlab"
 
-### PRO ###
-- name: set facts for pro
-  block:
-    - name: set dns_suffix
-      set_fact:
-        env_dns_suffix: vault.accor.net
-        vault_leader_hostname: "{{ hostvars['vault-0']['ansible_facts']['fqdn'] }}"
-  when: deployment_env == "pro"
-  
+# ### LZDEV ###
+# - name: set facts for lzdev
+#   block:
+#     - name: set dns_suffix
+#       set_fact:
+#         env_dns_suffix: vault.lzdev.cloud
+#         vault_leader_hostname: "{{ hostvars['vault-0.vault.lzdev.cloud']['ansible_facts']['fqdn'] }}"
+#   when: deployment_env == "lzdev"
+
+# ### PRO ###
+# - name: set facts for pro
+#   block:
+#     - name: set dns_suffix
+#       set_fact:
+#         env_dns_suffix: vault.accor.net
+#         vault_leader_hostname: "{{ hostvars['vault-0']['ansible_facts']['fqdn'] }}"
+#   when: deployment_env == "pro"

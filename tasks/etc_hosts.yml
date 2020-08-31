@@ -10,8 +10,8 @@
     dest: /etc/hosts
     line: "{% for host in groups['all'] %}
              {{ hostvars[host]['ansible_facts']['eth0']['ipv4']['address'] }} {{ hostvars[host]['ansible_facts']['fqdn'] }}.{{ env_dns_suffix }}
+
            {% endfor %}"
-           
     insertafter: EOF
 
 # - name: Add vault0's IP to hostname association in vault_followers

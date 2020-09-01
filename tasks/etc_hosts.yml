@@ -8,20 +8,12 @@
 - name: Associate vault server's IP to hostname
   lineinfile:
     dest: /etc/hosts
-    line: "{% for host in groups['all'] %}
-             {{ hostvars[host]['ansible_facts']['eth0']['ipv4']['address'] }} {{ hostvars[host]['ansible_facts']['fqdn'] }}.{{ env_dns_suffix }}
-
-           {% endfor %}"
+    line:
+      "{% for host in groups['all'] %}
+         {{ hostvars[host]['ansible_facts']['eth0']['ipv4']['address'] }} {{ hostvars[host]['ansible_facts']['fqdn'] }}.{{ env_dns_suffix }}
+         
+       {% endfor %}"
     insertafter: EOF
-
-# - name: Add vault0's IP to hostname association in vault_followers
-#   lineinfile:
-#     dest: /etc/hosts
-#     line: "{{ hostvars['vault-0']['ansible_eth0']['ipv4']['address'] }} {{ vault_leader_hostname }}"
-#     #line: "{{ hostvars['vault-0']['ansible_eth0']['ipv4']['address'] }} {{ vault_leader_hostname }}.{{ env_dns_suffix }}"
-#     insertafter: EOF
-#     state: present
-#   when: inventory_hostname in groups['vault_followers']
 
 - name: register /etc/hosts
   command:

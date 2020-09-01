@@ -137,8 +137,6 @@
         msg: "{{ status.stdout_lines }}"
 
     - name: VAULT LOGIN
-      #shell: "{{ vault_bin_path }}/vault login {{ hostvars['vault-0.vault.accor.net']['set_fact_root_token'] }} "
-      #shell: "{{ vault_bin_path }}/vault login {{ hostvars['vault-0']['set_fact_root_token'] }} "
       shell:  "{% for host in groups['vault_leader'] %}
                 {{ vault_bin_path }}/vault login {{ hostvars[host]['set_fact_root_token'] }}
               {% endfor %}"

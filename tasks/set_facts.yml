@@ -18,3 +18,7 @@
     shares: "-recovery-shares"
     threshold: "-recovery-threshold"
   when: vault_auto_unseal == true
+
+- name: debug
+  debug:
+    msg: "vault_leader_ip_addr:{{ vault_leader_ip_addr }} / vault_leader_hostname: {{ vault_leader_hostname }}"

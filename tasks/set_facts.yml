@@ -21,4 +21,4 @@
 
 - name: debug
   debug:
-    msg: "vault_leader_ip_addr:{{ hostvars['vault-0.vault.lzlab.cloud']['vault_leader_ip_addr] }} / vault_leader_hostname: {{ hostvars['vault-0.vault.lzlab.cloud']['vault_leader_hostname'] }}"
+    msg: "vault_leader_ip_addr:{{ hostvars['vault-0.vault.lzlab.cloud']['vault_leader_ip_addr'] }} / vault_leader_hostname: {{ hostvars['vault-0.vault.lzlab.cloud']['vault_leader_hostname'] }}"

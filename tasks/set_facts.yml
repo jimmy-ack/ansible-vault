@@ -1,28 +1,22 @@
 ---
 ### ALL ###
-- name: set facts used no matter the environment
-  block:
-    - name: set vault leader hostname
-      set_fact:
-        "{% for host in groups['vault_leader'] %}
-            vault_leader_ip_addr: {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
-            vault_leader_hostname: {{ hostvars[host]['ansible_facts']['fqdn'] }}
-        {% endfor %}"
+- name: set facts vault leader
+  set_fact:
+    "{% for host in groups['vault_leader'] %}
+        vault_leader_ip_addr: {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
+        vault_leader_hostname: {{ hostvars[host]['ansible_facts']['fqdn'] }}
+    {% endfor %}"
 
-- name: set fact shamir
-  block:
-    - name: set fact shamir
-      set_fact:
-        shares: "-key-shares"
-        threshold: "-key-threshold"
+- name: set facts shamir
+  set_fact:
+    shares: "-key-shares"
+    threshold: "-key-threshold"
   when: vault_auto_unseal == false
 
 - name: set fact kms
-  block:
-    - name: set fact kms
-      set_fact:
-        shares: "-recovery-shares"
-        threshold: "-recovery-threshold"
+  set_fact:
+    shares: "-recovery-shares"
+    threshold: "-recovery-threshold"
   when: vault_auto_unseal == true
 
 # ### LZLAB ###

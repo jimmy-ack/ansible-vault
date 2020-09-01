@@ -1,5 +1,4 @@
 ---
-
 # Checking first if environment is compatible with this role and if vault is already installed on nodes
 - name: Ensure compatibility with this role and checking if vault is already installed
   include: asserts.yml

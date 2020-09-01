@@ -96,3 +96,8 @@ vault_awskms_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') | default('', fal
 vault_awskms_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') | default('', false) }}"
 vault_awskms_key_id: "{{ lookup('env','VAULT_AWSKMS_SEAL_KEY_ID') | default('', false) }}"
 vault_awskms_endpoint: "{{ lookup('env','AWS_KMS_ENDPOINT') | default('', false) }}"
+
+# ---------------------------------------------------------------------------
+# etc_hosts + init_unseal_join variables
+# ---------------------------------------------------------------------------
+vault_key_file: /etc/vault.d/key.txt

@@ -104,10 +104,7 @@
 - name: FOLLOWERS SETUP
   block:
     - name: VAULT JOIN
-      shell:
-        "{% for host in groups['vault_leader'] %}
-           {{ vault_bin_path }}/vault operator raft join https://{{ hostvars[host]['ansible_facts']['fqdn'] }}.{{ env_dns_suffix }}:{{ vault_port }}
-         {% endfor %}"
+      shell: "{{ vault_bin_path }}/vault operator raft join https://{{ vault_leader_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
       environment:
         VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
       ignore_errors: true

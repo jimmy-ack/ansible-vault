@@ -1,11 +1,10 @@
 ---
 ### ALL ###
-# - name: set facts vault leader
-#   set_fact:
-#     "{% for host in groups['vault_leader'] %}
-#         vault_leader_ip_addr: {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
-#         vault_leader_hostname: {{ hostvars[host]['ansible_facts']['fqdn'] }}
-#     {% endfor %}"
+- name: set facts vault leader
+  set_fact:
+    vault_leader_hostname="{{ hostvars[item]['ansible_facts']['fqdn'] }}"
+  loop: "{{ groups['vault_leader'] }}"
+  when: inventory_hostname in groups['vault_leader']
 
 - name: set facts shamir
   set_fact:

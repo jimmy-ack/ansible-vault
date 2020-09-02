@@ -103,4 +103,4 @@ vault_awskms_endpoint: "{{ lookup('env','AWS_KMS_ENDPOINT') | default('', false)
 etc_hosts: false
 init_unseal_join: false
 vault_key_file: /etc/vault.d/key.txt
-env_dns_suffix: vault.lzlab.cloud
+env_dns_suffix: vault.example.com # Mandatory (cf. Readme)

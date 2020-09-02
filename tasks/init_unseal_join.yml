@@ -104,18 +104,21 @@
 - name: FOLLOWERS SETUP
   block:
     - name: VAULT JOIN
-      shell: "{{ vault_bin_path }}/vault operator raft join https://{{ vault_leader_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
+      shell: "{{ vault_bin_path }}/vault operator raft join https://{{item}}.{{ env_dns_suffix }}:{{ vault_port }}"
       environment:
         VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
+      loop: "{{ groups['vault_leader'] }}"
       ignore_errors: true
     
     - name: VAULT UNSEAL
-      shell:  "{% for host in groups['vault_leader'] %}
-                {{ vault_bin_path }}/vault operator unseal {{ hostvars[host]['set_fact_key_1'] }}
-              {% endfor %}"
+      shell: "{{ vault_bin_path }}/vault operator unseal {{ hostvars[item]['set_fact_key_1'] }}"
+      # shell:  "{% for host in groups['vault_leader'] %}
+      #           {{ vault_bin_path }}/vault operator unseal {{ hostvars[host]['set_fact_key_1'] }}
+      #         {% endfor %}"
       environment:
         VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
       ignore_errors: true
+      loop: "{{ groups['vault_leader'] }}"
       # no_log: true
   when: inventory_hostname in groups['vault_followers']
 

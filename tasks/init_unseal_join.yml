@@ -95,7 +95,7 @@
 
     - name: show leader_unseal
       debug:
-        msg: "{{ leader_unseal.stdout_lines }}"
+        msg: "{{ leader_unseal }}"
       when: leader_unseal is defined
   when: inventory_hostname in groups['vault_leader']
 

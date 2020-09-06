@@ -4,15 +4,15 @@
 # ---------------------------------------------------------------------------
 
 # Package variables
-vault_target_version: "1.5.3"
-vault_enterprise: false
-vault_version: "{{ vault_target_version }}{{'+ent' if vault_enterprise else '' }}"
+vault_enterprise: true
+vault_version: "1.5.3"
+vault_enterprise_version: "{{ vault_version }}{{ '+ent' if vault_enterprise else '' }}"
 vault_os: "{{ ansible_system|lower }}"
 vault_architecture: "amd64"
-vault_pkg: "vault_{{ vault_version }}_{{ vault_os }}_{{ vault_architecture }}.zip"
-vault_shasums: "vault_{{ vault_version }}_SHA256SUMS"
-vault_zip_url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_{{ vault_os }}_{{ vault_architecture }}.zip"
-vault_checksum_file_url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version}}_SHA256SUMS"
+vault_pkg: "vault_{{ vault_enterprise_version if vault_enterprise else vault_version }}_{{ vault_os }}_{{ vault_architecture }}.zip"
+vault_shasums: "vault_{{ vault_enterprise_version if vault_enterprise else vault_version }}_SHA256SUMS"
+vault_zip_url: "https://releases.hashicorp.com/vault/{{ vault_enterprise_version if vault_enterprise else vault_version }}/{{ vault_pkg }}"
+vault_checksum_file_url: "https://releases.hashicorp.com/vault/{{ vault_enterprise_version if vault_enterprise else vault_version }}/{{ vault_shasums }}"
 
 # System user and group
 vault_user: "vault"

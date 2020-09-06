@@ -51,22 +51,4 @@ Vagrant.configure("2") do |config|
     vault3.vm.provision "shell", inline: $script
   end
 
-  #config.vm.provision :ansible do |ansible|
-  #  ansible.playbook = ANSIBLE_PLAYBOOK
-  #  ansible.verbose = true
-  #  ansible.extra_vars = {
-  #    VAULT_LOG_LEVEL: "info",
-  #    VAULT_IFACE: "eth1"
-  #  }
-  #  ansible.groups = {
-  #    "vault_raft_servers" => ["vault[1:3]"]
-  #  }
-#
-  #  ansible.host_vars = {
-  #    "vault1" => {},
-  #    "vault2" => {},
-  #    "vault3" => {}
-  #  }
-  #end
-
 end

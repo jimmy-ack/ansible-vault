@@ -4,7 +4,9 @@
 # ---------------------------------------------------------------------------
 
 # Package variables
-vault_version: "1.4.0"
+vault_target_version: "1.5.3"
+vault_enterprise: false
+vault_version: "{{ vault_target_version }}{{'+ent' if vault_enterprise else '' }}"
 vault_os: "{{ ansible_system|lower }}"
 vault_architecture: "amd64"
 vault_pkg: "vault_{{ vault_version }}_{{ vault_os }}_{{ vault_architecture }}.zip"

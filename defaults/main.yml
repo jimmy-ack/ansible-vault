@@ -4,6 +4,7 @@
 # ---------------------------------------------------------------------------
 
 # Package variables
+vault_version: "1.4.2"
 vault_enterprise: true
 vault_version: "1.5.3"
 vault_enterprise_version: "{{ vault_version }}{{ '+ent' if vault_enterprise else '' }}"
@@ -59,6 +60,7 @@ vault_main_configuration_template: vault_main_configuration.hcl.j2
 vault_tls_disable: "true"
 vault_tls_config_path: "{{ vault_config_path }}/tls"
 #vault_tls_src_files: ""
+vault_tls_client_ca_file: "ca.crt"
 vault_tls_cert_file: "server.crt"
 vault_tls_key_file: "server.key"
 vault_tls_client_ca_file: "ca.crt"
@@ -82,4 +84,28 @@ vault_cluster_disable: false
 vault_cluster_addr: "{{ vault_protocol }}://{{ vault_cluster_address }}"
 #vault_redirect_address: "<lb ip address>"
 vault_api_addr: "{{ vault_protocol }}://{{ vault_redirect_address | default(hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address']) }}:{{ vault_port }}"
+
+# ---------------------------------------------------------------------------
+# Seal variables
+# ---------------------------------------------------------------------------
+
+# Enabling/Disabling auto unseal
+vault_auto_unseal: false
+
+# awskms seal
+vault_awskms: false
+vault_awskms_backend: vault_seal_awskms.j2
+vault_awskms_region: "{{ lookup('env','AWS_DEFAULT_REGION') | default('us-east-1', false) }}"
+vault_awskms_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') | default('', false) }}"
+vault_awskms_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') | default('', false) }}"
+vault_awskms_key_id: "{{ lookup('env','VAULT_AWSKMS_SEAL_KEY_ID') | default('', false) }}"
+vault_awskms_endpoint: "{{ lookup('env','AWS_KMS_ENDPOINT') | default('', false) }}"
+
+# ---------------------------------------------------------------------------
+# etc_hosts + init_unseal_join variables
+# ---------------------------------------------------------------------------
+etc_hosts: false
+init_unseal_join: false
+vault_key_file: /etc/vault.d/key.txt
+env_dns_suffix: vault.example.com # Mandatory (cf. Readme)
 vault_auto_unseal: false

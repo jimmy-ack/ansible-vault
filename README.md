@@ -1,6 +1,10 @@
 ansible-lss-vault
 =========
 
+Once the role is deployed:
+1. [Master] `vault operator init -recovery-shares=1 -recovery-threshold=1 > key`
+2. [Followers] `vault operator raft join https://vault-0.vault.lzlab.cloud:8200`
+
 Since version 1.4 of Hashicorp Vault, Backend Raft for Cluster is available and by the way, Vault become a statefull workload.
 
 The goal of this project is to facility maintain in operational condition a Vault Cluster with Ansible while there is no autopilot on Vault Raft Backend (unlike in Consul).

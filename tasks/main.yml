@@ -1,5 +1,4 @@
 ---
-
 # Checking first if environment is compatible with this role and if vault is already installed on nodes
 - name: Ensure compatibility with this role and checking if vault is already installed
   include: asserts.yml
@@ -14,12 +13,23 @@
   include: install.yml
   when: vault_install_required == true
 
-# Upgrade vault on nodes if the upgrade is required
-- name: Upgrade vault to version {{ vault_version }}
-  include: upgrade.yml
-  when: vault_upgrade_required is defined and vault_upgrade_required == true and vault_auto_unseal == true
-
 # Configuring vault only if install is required or if auto unseal is enabled
 - name: Ensure vault configuration files are defined as expected
   include: configure.yml
   when: vault_install_required == true or vault_auto_unseal == true
+
+# Set facts for following 2 includes
+- name: Set facts for /etc/hosts & Initialize + Unseal
+  include: set_facts.yml
+  when: (etc_host == true) or (init_unseal_join == true)
+
+# Add /etc/hosts vault entries if no dns is available
+- name: Configure /etc/hosts
+  include: etc_hosts.yml
+  when: etc_host == true
+
+# Vault automatic init + unseal (shamir & cloud-kms compatible) + join
+# Use only for dev. env. DO NOT use in production
+- name: Initialize and Unseal Vault automatically
+  include: init_unseal_join.yml
+  when: init_unseal_join == true

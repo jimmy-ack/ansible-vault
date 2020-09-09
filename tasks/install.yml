@@ -100,6 +100,8 @@
       state: directory
       owner: "{{ vault_user }}"
       group: "{{ vault_group }}"
+    when: vault_tls_disable == "false"
+
 
   - name: Ensure Vault SSL certificate and key are on the server
     copy:
@@ -124,6 +126,9 @@
 
   - name: Add TLS CA certificate to OS keystore
     command: update-ca-trust extract
+
+      
+
 
   when: vault_tls_disable == "false"
 

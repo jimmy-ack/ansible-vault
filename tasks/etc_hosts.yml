@@ -1,0 +1,25 @@
+---
+- name: Clear previous /etc/hosts "vault" entries
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "vault"
+    state: absent
+
+- name: Associate vault server's IP to hostname
+  lineinfile:
+    dest: /etc/hosts
+    line:
+      "{% for host in groups['all'] %}
+         {{ hostvars[host]['ansible_facts']['eth0']['ipv4']['address'] }} {{ hostvars[host]['ansible_facts']['fqdn'] }}.{{ env_dns_suffix }}
+         
+       {% endfor %}"
+    insertafter: EOF
+
+- name: register /etc/hosts
+  command:
+    cmd: cat /etc/hosts
+  register: etc_hosts
+
+- name: show etc_hosts
+  debug:
+    msg: "{{ etc_hosts.stdout_lines }}"

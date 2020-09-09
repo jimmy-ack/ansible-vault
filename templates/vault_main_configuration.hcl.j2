@@ -38,3 +38,9 @@ storage "raft" {
 {% if vault_ui -%}
 ui = {{ vault_ui | bool | lower }}
 {% endif %}
+
+{% if vault_auto_unseal | bool -%}
+{% if vault_awskms | bool -%}
+  {% include vault_awskms_backend with context %}
+{% endif %}
+{% endif %}

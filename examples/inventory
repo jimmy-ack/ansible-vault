@@ -1,4 +1,4 @@
 [vault_nodes]
-10.0.1.15 ansible_ssh_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/vault1/virtualbox/private_key vault_raft_node_id=vault1
-10.0.1.16 ansible_ssh_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/vault2/virtualbox/private_key vault_raft_node_id=vault2
-10.0.1.17 ansible_ssh_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/vault3/virtualbox/private_key vault_raft_node_id=vault3
+192.168.1.24 ansible_ssh_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/vault1/virtualbox/private_key vault_raft_node_id=vault1
+192.168.1.45 ansible_ssh_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/vault2/virtualbox/private_key vault_raft_node_id=vault2
+192.168.1.33 ansible_ssh_user=vagrant ansible_ssh_private_key_file=./.vagrant/machines/vault3/virtualbox/private_key vault_raft_node_id=vault3

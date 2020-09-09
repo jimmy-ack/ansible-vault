@@ -5,12 +5,15 @@
 
 # Package variables
 vault_version: "1.4.2"
+vault_enterprise: true
+vault_version: "1.5.3"
+vault_enterprise_version: "{{ vault_version }}{{ '+ent' if vault_enterprise else '' }}"
 vault_os: "{{ ansible_system|lower }}"
 vault_architecture: "amd64"
-vault_pkg: "vault_{{ vault_version }}_{{ vault_os }}_{{ vault_architecture }}.zip"
-vault_shasums: "vault_{{ vault_version }}_SHA256SUMS"
-vault_zip_url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_{{ vault_os }}_{{ vault_architecture }}.zip"
-vault_checksum_file_url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version}}_SHA256SUMS"
+vault_pkg: "vault_{{ vault_enterprise_version if vault_enterprise else vault_version }}_{{ vault_os }}_{{ vault_architecture }}.zip"
+vault_shasums: "vault_{{ vault_enterprise_version if vault_enterprise else vault_version }}_SHA256SUMS"
+vault_zip_url: "https://releases.hashicorp.com/vault/{{ vault_enterprise_version if vault_enterprise else vault_version }}/{{ vault_pkg }}"
+vault_checksum_file_url: "https://releases.hashicorp.com/vault/{{ vault_enterprise_version if vault_enterprise else vault_version }}/{{ vault_shasums }}"
 
 # System user and group
 vault_user: "vault"
@@ -60,12 +63,13 @@ vault_tls_config_path: "{{ vault_config_path }}/tls"
 vault_tls_client_ca_file: "ca.crt"
 vault_tls_cert_file: "server.crt"
 vault_tls_key_file: "server.key"
-#vault_tls_ca_file: "ca.crt"
+vault_tls_client_ca_file: "ca.crt"
 vault_tls_min_version: "tls12"
 #vault_tls_cipher_suites: ""
 #vault_tls_prefer_server_cipher_suites: ""
 vault_tls_require_and_verify_client_cert: false
 vault_tls_disable_client_certs: false
+
 
 # ---------------------------------------------------------------------------
 # Raft backend
@@ -104,3 +108,4 @@ etc_hosts: false
 init_unseal_join: false
 vault_key_file: /etc/vault.d/key.txt
 env_dns_suffix: vault.example.com # Mandatory (cf. Readme)
+vault_auto_unseal: false

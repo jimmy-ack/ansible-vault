@@ -1,4 +1,8 @@
 ---
+# Set facts for following 2 includes
+- name: Set facts for /etc/hosts & Initialize + Unseal
+  include: set_facts.yml
+
 # Checking first if environment is compatible with this role and if vault is already installed on nodes
 - name: Ensure compatibility with this role and checking if vault is already installed
   include: asserts.yml
@@ -17,11 +21,6 @@
 - name: Ensure vault configuration files are defined as expected
   include: configure.yml
   when: vault_install_required == true or vault_auto_unseal == true
-
-# Set facts for following 2 includes
-- name: Set facts for /etc/hosts & Initialize + Unseal
-  include: set_facts.yml
-  when: (etc_host == true) or (init_unseal_join == true)
 
 # Add /etc/hosts vault entries if no dns is available
 - name: Configure /etc/hosts

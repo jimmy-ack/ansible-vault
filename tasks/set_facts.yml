@@ -28,7 +28,7 @@
   when: vault_flavor == "prem"
 
 
-- name: set facts for vault PREMIUM.HSM
+- name: set facts for vault PREMIUMHSM
   set_fact:
     vault_bucket: "hc-enterprise-binaries"
     vault_bucket_path: "vault/{{ vault_flavor }}/{{ vault_version }}"

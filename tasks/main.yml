@@ -6,12 +6,12 @@
 # Ensure requirements are in installed on nodes
 - name: Ensure required OS packages are installed
   include: requirements.yml
-  when: vault_install_required == true
+  when: vault_install_required == true or vault_reconfigure == true
 
 # Installing vault on nodes only if install is required
 - name: Ensure vault is installed
   include: install.yml
-  when: vault_install_required == true
+  when: vault_install_required == true or vault_reconfigure == true
 
 # Configuring vault only if install is required or if auto unseal is enabled
 - name: Ensure vault configuration files are defined as expected

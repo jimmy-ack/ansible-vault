@@ -5,7 +5,7 @@
     vault_shasums: "vault_{{ vault_version }}_SHA256SUMS"
     vault_zip_url: "https://releases.hashicorp.com/vault/{{ vault_version }}/{{ vault_pkg }}"
     vault_checksum_file_url: "https://releases.hashicorp.com/vault/{{ vault_version }}/{{ vault_shasums }}"
-when: (vault_flavor == "") or (vault_flavor == "oss")
+  when: (vault_flavor == "") or (vault_flavor == "oss")
 
 
 # - name: set facts for vault ENTERPRISE
@@ -14,7 +14,7 @@ when: (vault_flavor == "") or (vault_flavor == "oss")
     vault_shasums: "vault_{{ vault_version }}+{{ vault_flavor }}_SHA256SUMS"
     vault_zip_url: "https://releases.hashicorp.com/vault/{{ vault_version }}+{{ vault_flavor }}/{{ vault_pkg }}"
     vault_checksum_file_url: "https://releases.hashicorp.com/vault/{{ vault_version }}+{{ vault_flavor }}/{{ vault_shasums }}"
-when: vault_flavor == "enterprise"
+  when: vault_flavor == "enterprise"
 
 
 #- name: set facts for vault PREMIUM
@@ -25,7 +25,7 @@ when: vault_flavor == "enterprise"
     vault_shasums: "vault-enterprise_{{ vault_version }}+{{ vault_flavor }}_SHA256SUMS"
     vault_zip_url: "{{ vault_bucket }}/{{ vault_bucket_path }}/{{ vault_pkg}}"
     vault_checksum_file_url: "{{ vault_bucket_path }}/{{ vault_shasums }}"
-when: vault_flavor == "prem"
+  when: vault_flavor == "prem"
 
 
 # - name: set facts for vault PREMIUMHSM
@@ -36,4 +36,4 @@ when: vault_flavor == "prem"
     vault_shasums: "vault-enterprise_{{ vault_version }}+{{ vault_flavor }}_SHA256SUMS"
     vault_zip_url: "{{ vault_bucket }}/{{ vault_bucket_path }}/{{ vault_pkg}}"
     vault_checksum_file_url: "{{ vault_bucket_path }}/{{ vault_shasums }}"
-when: vault_flavor == "prem.hsm"
+  when: vault_flavor == "prem.hsm"

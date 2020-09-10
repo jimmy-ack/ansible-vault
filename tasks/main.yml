@@ -26,7 +26,7 @@
 # Add /etc/hosts vault entries if no dns is available
 - name: Configure /etc/hosts
   include: etc_hosts.yml
-  when: etc_host == true
+  when: etc_hosts == true
 
 # Vault automatic init + unseal (shamir & cloud-kms compatible) + join
 # Use only for dev. env. DO NOT use in production

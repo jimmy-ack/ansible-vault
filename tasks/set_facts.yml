@@ -3,13 +3,12 @@
 - name: Include flavor specific variables
   include_vars:
     file: "{{ vault_flavor }}.yml"
-  # vars:
-  #   params:
-  #     files:
-  #       - "{{ vault_flavor }}.yml"
-  #     paths:
-  #       - vars
   when: vault_flavor == "oss"
+
+- name: debug
+  debug:
+    msg: "{{ vault_pkg }} / {{ vault_shasums }} / {{ vault_zip_url }} / {{ vault_checksum_file_url }}"
+
 # - set_fact:
 #     vault_pkg: "vault_{{ vault_version }}_{{ vault_os }}_{{ vault_architecture }}.zip"
 #     vault_shasums: "vault_{{ vault_version }}_SHA256SUMS"

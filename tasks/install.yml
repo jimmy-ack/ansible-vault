@@ -127,9 +127,6 @@
   - name: Add TLS CA certificate to OS keystore
     command: update-ca-trust extract
 
-      
-
-
   when: vault_tls_disable == "false"
 
 - name: Ensure Vault SSL CA certificate is on the server (for tls client authentication)

@@ -1,7 +1,7 @@
 ---
 #- name: set facts for vault OSS
 - name: Include flavor specific variables
-  include_vars: "{{ lookup('first_found', params) }}"
+  include_vars:
     file: "{{ vault_flavor }}.yml"
   # vars:
   #   params:

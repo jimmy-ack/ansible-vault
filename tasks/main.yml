@@ -1,8 +1,4 @@
 ---
-# Set facts for following 2 includes
-- name: Set facts for /etc/hosts & Initialize + Unseal
-  include: set_facts.yml
-
 # Checking first if environment is compatible with this role and if vault is already installed on nodes
 - name: Ensure compatibility with this role and checking if vault is already installed
   include: asserts.yml

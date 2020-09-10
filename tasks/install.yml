@@ -1,4 +1,27 @@
 ---
+- name: set vars for specified vault flavor
+  block:
+    - name: set vars for vault OSS
+      include_vars:
+        file: "{{ vault_flavor }}.yml"
+      when: vault_flavor == "oss"
+
+    - name: set vars for vault ENTERPRISE
+      include_vars:
+        file: "{{ vault_flavor }}.yml"
+      when: vault_flavor == "ent"
+
+    - name: set vars for vault PREMIUM
+      include_vars:
+        file: "{{ vault_flavor }}.yml"
+      when: vault_flavor == "prem"
+
+    - name: set vars for vault PREMIUM.HSM
+      include_vars:
+        file: "{{ vault_flavor }}.yml"
+      when: vault_flavor == "prem.hsm"
+
+
 - name: Ensure Vault group is created
   group:
     name: "{{ vault_group }}"
@@ -38,12 +61,25 @@
   register: vault_sha256
   when: vault_install_required == true
 
-- name: "Download Vault"
-  get_url:
-    url: "{{ vault_zip_url }}"
-    dest: "/tmp/vault/{{ vault_pkg }}"
-    checksum: "sha256:{{ vault_sha256.stdout.split(' ')|first }}"
-    timeout: "42"
+- name: Download Vault
+  block:
+    - name: Download OSS or Enterprise (public Internet)
+      get_url:
+        url: "{{ vault_zip_url }}"
+        dest: "/tmp/vault/{{ vault_pkg }}"
+        checksum: "sha256:{{ vault_sha256.stdout.split(' ')|first }}"
+        timeout: "42"
+      when: (vault_flavor == "oss") or (vault_flavor == "ent")
+    
+    - name: Download PREM or PREM.HSM (AWS S3 authentication required)
+      aws_s3:
+        bucket: "{{ vault_bucket }}"
+        object:  "{{ vault_zip_url }}"
+        dest: "/tmp/vault/{{ vault_pkg }}"
+        mode: get
+        aws_access_key: "{{ vault_s3_access_key }}"
+        aws_secret_key: "{{ vault_s3_secret_key }}"
+      when: (vault_flavor == "prem") or (vault_flavor == "prem.hsm")
   when: vault_install_required == true
 
 - name: Unarchive Vault and install binary

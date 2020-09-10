@@ -21,15 +21,15 @@
 # Set facts for following 2 includes
 - name: Set facts for /etc/hosts & Initialize + Unseal
   include: set_facts.yml
-  when: (etc_host == true) or (init_unseal_join == true)
+  when: (etc_hosts == true or init_unseal_join == true) and groups['vault_leader'] is defined
 
 # Add /etc/hosts vault entries if no dns is available
 - name: Configure /etc/hosts
   include: etc_hosts.yml
-  when: etc_host == true
+  when: etc_hosts == true
 
 # Vault automatic init + unseal (shamir & cloud-kms compatible) + join
 # Use only for dev. env. DO NOT use in production
 - name: Initialize and Unseal Vault automatically
   include: init_unseal_join.yml
-  when: init_unseal_join == true
+  when: init_unseal_join == true and groups['vault_leader'] is defined

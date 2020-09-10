@@ -106,3 +106,10 @@ etc_hosts: false
 init_unseal_join: false
 vault_key_file: /etc/vault.d/key.txt
 env_dns_suffix: vault.example.com # Mandatory (cf. Readme)
+
+
+# ---------------------------------------------------------------------------
+# Useful flags
+# ---------------------------------------------------------------------------
+# Set vault_reconfigure to true if you need to force to reconfigure vault
+vault_reconfigure: false

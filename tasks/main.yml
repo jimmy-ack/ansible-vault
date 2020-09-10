@@ -16,7 +16,7 @@
 # Configuring vault only if install is required or if auto unseal is enabled
 - name: Ensure vault configuration files are defined as expected
   include: configure.yml
-  when: vault_install_required == true or vault_auto_unseal == true
+  when: vault_install_required == true or vault_auto_unseal == true or vault_reconfigure == true
 
 # Set facts for following 2 includes
 - name: Set facts for /etc/hosts & Initialize + Unseal

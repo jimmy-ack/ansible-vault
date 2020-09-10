@@ -4,7 +4,7 @@
   set_fact:
     vault_leader_hostname="{{ hostvars[item]['ansible_facts']['fqdn'] }}"
   loop: "{{ groups['vault_leader'] }}"
-  when: inventory_hostname in groups['vault_leader']
+  when: inventory_hostname in groups['vault_leader'] and groups[your_group_name] is defined
 
 - name: set facts shamir
   set_fact:

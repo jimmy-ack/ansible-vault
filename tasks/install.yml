@@ -50,11 +50,24 @@
     path: "/tmp/vault/{{ vault_pkg }}"
     state: absent
 
-- name: Get Vault package checksum file
-  get_url:
-    url: "{{ vault_checksum_file_url }}"
-    dest: "/tmp/vault/{{ vault_shasums }}"
-  when: vault_install_required == true
+- name: Get Vault package checksum
+  block:
+    - name: Get Vault package checksum for OSS or ENT (public Internet)
+      get_url:
+        url: "{{ vault_checksum_file_url }}"
+        dest: "/tmp/vault/{{ vault_shasums }}"
+      when: (vault_flavor == "oss") or (vault_flavor == "ent")
+
+    - name: Get Vault package checksum for PREM or PREM.HSM (AWS S3 authentication required)
+      aws_s3:
+        bucket: "{{ vault_bucket }}"
+        object: "{{ vault_checksum_file_url }}"
+        dest: "/tmp/vault/{{ vault_shasums }}"
+        mode: get
+        aws_access_key: "{{ vault_s3_access_key }}"
+        aws_secret_key: "{{ vault_s3_secret_key }}"
+      when: (vault_flavor == "prem") or (vault_flavor == "prem.hsm")
+  when: (vault_install_required == true)
 
 - name: Get Vault package checksum
   shell: "grep {{ vault_pkg }} /tmp/vault/{{ vault_shasums }}"
@@ -63,7 +76,7 @@
 
 - name: Download Vault
   block:
-    - name: Download OSS or Enterprise (public Internet)
+    - name: Download OSS or ENT (public Internet)
       get_url:
         url: "{{ vault_zip_url }}"
         dest: "/tmp/vault/{{ vault_pkg }}"

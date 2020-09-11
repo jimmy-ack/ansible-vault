@@ -72,7 +72,7 @@ vault_tls_disable_client_certs: false
 vault_raft_node_id: "{{ ansible_fqdn }}"
 vault_iface: "{{ lookup('env','VAULT_IFACE') | default(ansible_default_ipv4.interface, true) }}"
 vault_address: "{{ hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address'] }}"
-vault_cluster_address: "{{ vault_address }}:{{ vault_cluster_port }}"
+vault_cluster_address: "{{ hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address'] }}:{{ vault_cluster_port }}"
 vault_protocol: "{% if vault_tls_disable %}http{% else %}https{% endif %}"
 vault_cluster_disable: false
 vault_cluster_addr: "{{ vault_protocol }}://{{ vault_cluster_address }}"

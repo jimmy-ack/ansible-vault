@@ -63,6 +63,8 @@
         bucket: "{{ vault_bucket }}"
         object: "{{ vault_checksum_file_url }}"
         dest: "/tmp/vault/{{ vault_shasums }}"
+        overwrite: different
+        ignore_nonexistent_bucket: true
         mode: get
         aws_access_key: "{{ vault_s3_access_key }}"
         aws_secret_key: "{{ vault_s3_secret_key }}"
@@ -89,6 +91,8 @@
         bucket: "{{ vault_bucket }}"
         object:  "{{ vault_zip_url }}"
         dest: "/tmp/vault/{{ vault_pkg }}"
+        overwrite: different
+        ignore_nonexistent_bucket: true
         mode: get
         aws_access_key: "{{ vault_s3_access_key }}"
         aws_secret_key: "{{ vault_s3_secret_key }}"

@@ -77,7 +77,7 @@
 
 - name: Download Vault
   block:
-    - name: Download OSS or ENT (public Internet)
+    - name: Download Vault OSS or ENT (public Internet)
       get_url:
         url: "{{ vault_zip_url }}"
         dest: "/tmp/vault/{{ vault_pkg }}"
@@ -85,7 +85,7 @@
         timeout: "42"
       when: (vault_flavor == "oss") or (vault_flavor == "ent")
     
-    - name: Download PREM or PREM.HSM (AWS S3 authentication required)
+    - name: Download Vault PREM or PREM.HSM (AWS S3 authentication required)
       aws_s3:
         bucket: "{{ vault_bucket }}"
         object:  "{{ vault_zip_url }}"

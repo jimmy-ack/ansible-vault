@@ -4,8 +4,8 @@
 # ---------------------------------------------------------------------------
 
 # Package variables
-vault_version: "1.5.2"
-vault_flavor: oss       # values can be: oss (default) / ent / prem / prem.hsm
+vault_version: "1.5.3"
+vault_flavor: oss # values can be: oss (default) / ent / prem / prem.hsm
 vault_s3_access_key: 
 vault_s3_secret_key: 
 vault_os: "{{ ansible_system|lower }}"

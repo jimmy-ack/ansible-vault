@@ -44,3 +44,12 @@ ui = {{ vault_ui | bool | lower }}
   {% include vault_awskms_backend with context %}
 {% endif %}
 {% endif %}
+
+{% if vault_consul_registration | bool -%}
+service_registration "consul" {
+  address = "{{ consul_server_address }}:{{ consul_server_port }}"
+  scheme  = "{{ consul_server_scheme }}"
+  service = "{{ vault_service_name }}"
+  token   = "{{ consul_token }}"
+}
+{% endif %}

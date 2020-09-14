@@ -5,7 +5,6 @@
     name: vault
   ignore_errors: true
 
-#######
 
 - name: Check Vault status (Initialized & Sealed)
   block:
@@ -49,7 +48,6 @@
             threshold: "-recovery-threshold"
       when: vault_auto_unseal == true
 
-#######
 
 - name: LEADER SETUP
   block:
@@ -99,7 +97,6 @@
       when: leader_unseal is defined
   when: inventory_hostname in groups['vault_leader']
 
-#######
 
 - name: FOLLOWERS SETUP
   block:
@@ -119,7 +116,6 @@
       # no_log: true
   when: inventory_hostname in groups['vault_followers']
 
-#######
 
 - name: FINAL STEPS
   block:
@@ -152,5 +148,3 @@
     - name: show list_peers
       debug:
         msg: "{{ list_peers.stdout_lines }}"
-
-#######

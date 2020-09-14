@@ -1,5 +1,89 @@
-ansible-lss-vault
+ansible-lss-vault-install
 =========
+
+## Goal
+This role deploys one or many vault servers:
+- `1` vault_leader
+- `n` vault_followers
+
+It uses the `raft` storage backend (available since [Hashicorp Vault](https://www.vaultproject.io/) v1.4.0)
+
+## Usage
+| Files                            | Purpose                                                  |
+| -------------------------------- | -------------------------------------------------------- |
+| `vault-install-requirements.yml` | Download and install this role                           |
+| `vault-install-inventory.yml`    | Defines vault hosts (`vault_leader` + `vault_followers`) |
+| `vault-install-playbook.yml`     | Deploys the role base on your `inventory`                |
+---------
+
+### **Install the role**
+`vault-install-requirements.yml`
+```yml
+- src: https://github.com/jimmy-ack/ansible-lss-vault-install
+  name: ansible-lss-vault-install
+  version: develop
+  scm: git
+```
+
+```sh
+ansible-galaxy install -r vault-install-requirements.yml -f
+```
+
+### **Setup the inventory**
+`vault-install-inventory.yml`
+```yml
+[vault_leader]
+vault-0.<your_dns>
+
+[vault_followers]
+vault-1.<your_dns>
+vault-2.<your_dns>
+
+[all:vars]
+ansible_user=<your_user>
+```
+
+### **Deploy the role** (using its default behavior)
+`vault-install-playbook.yml`
+```yml
+- name: Install Vault
+  hosts: vault_leader:vault_followers
+  become: true
+  become_user: root
+  gather_facts: true
+  any_errors_fatal: true
+    
+  tasks:
+    - include_role:
+        name: ansible-lss-vault-install
+```
+
+```sh
+ansible-playbook vault-install-playbook.yml -i vault-install-inventory.yml -v
+```
+
+### **Role vars**
+| Variable                   | Default             | Details
+| -------------------------- | ------------------- | -------
+| `vault_version`            | `1.5.3`             |
+| `env_dns_suffix`           | `vault.example.com` | Used in the role to connect between vault hosts
+| `vault_address`            | `<host_ip>`         | IP addr from which Vault will be accessible from<br>Eg: `0.0.0.0`
+| `vault_auto_unseal`        | `false`             | Enables/Disables Vault auto-unseal feature
+| `etc_host`                 | `false`             | Add /etc/hosts vault entries if no dns is available
+| `init_unseal_join`         | `false`             | Vault automatic init + unseal (shamir & cloud-kms compatible) + join<br>Use only for dev. **DO NOT use in production**
+| `vault_tls_cert_key_store` | n/a                 | Path where to install a private PKI<br>Eg centos: `vault_tls_cert_key_store: /etc/pki/ca-trust/source/anchors`
+| -------------------------- | ------------------- | -------
+| **`vault_flavor`**         | `oss`               | Can be `oss` / `ent` / `prem` / `prem.hsm`
+| `vault_s3_access_key`      | n/a                 | Required if `vault_flavor: prem` or `prem.hsm` to authenticate upon s3
+| `vault_s3_secret_key`      | n/a                 | Required if `vault_flavor: prem` or `prem.hsm` to authenticate upon s3
+| -------------------------- | ------------------- | -------
+| **`vault_tls_disable`**    | `"true"`            |
+| `vault_tls_src_files`      | n/a                 | Required if `vault_tls_disable: "false"`<br>Relative path of `vault-install-playbook.yml` where to look for certs
+| -------------------------- | ------------------- | -------
+| **`vault_awskms`**         | `false`             | Enables/Disables auto-unseal using aws-kms
+| `vault_awskms_key_id`      | n/a                 | Required if `vault_awskms: true`<br>
+| `vault_awskms_region`      | `us-east-1`         |
+---------
 
 Once the role is deployed:
 1. [Master] `vault operator init -recovery-shares=1 -recovery-threshold=1 > key`

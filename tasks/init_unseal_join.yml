@@ -106,7 +106,7 @@
 - name: FOLLOWERS SETUP
   block:
     - name: VAULT JOIN
-      shell: "{{ vault_bin_path }}/vault operator raft join https://{{vault_leader_hostname}}.{{ env_dns_suffix }}:{{ vault_port }}"
+      shell: "{{ vault_bin_path }}/vault operator raft join https://{{vault_leader_hostname.stdout}}.{{ env_dns_suffix }}:{{ vault_port }}"
       environment:
         VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
       #loop: "{{ groups['vault_leader'] }}"
@@ -114,7 +114,7 @@
     
     - name: VAULT UNSEAL
       #shell: "{{ vault_bin_path }}/vault operator unseal {{ hostvars[item]['set_fact_key_1'] }}"
-      shell: "{{ vault_bin_path }}/vault operator unseal {{ key_1 }}"
+      shell: "{{ vault_bin_path }}/vault operator unseal {{ key_1.stdout }}"
       environment:
         VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
       ignore_errors: true
@@ -139,7 +139,7 @@
 
     - name: VAULT LOGIN
       #shell: "{{ vault_bin_path }}/vault login {{ hostvars[item]['set_fact_root_token'] }}"
-      shell: "{{ vault_bin_path }}/vault login {{ root_token }}"
+      shell: "{{ vault_bin_path }}/vault login {{ root_token.stdout }}"
       environment:
         VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
       #loop: "{{ groups['vault_leader'] }}"

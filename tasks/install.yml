@@ -114,7 +114,7 @@
   become_user: "{{ vault_user }}"
   register: autocomplete
   failed_when: autocomplete.rc != 0 and autocomplete.rc != 1
-  changed_when: "'already installed' not in autocomplete_install.stderr"
+  changed_when: "'already installed' not in autocomplete.stderr"
 
 - name: Insert http(s) export in dotfile
   lineinfile:

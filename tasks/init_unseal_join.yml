@@ -126,7 +126,6 @@
       environment:
         VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
       register: list_peers
-      # no_log: true
     
     - name: show list_peers
       debug:

@@ -27,4 +27,4 @@
 # Use only for dev. env. DO NOT use in production
 - name: Initialize and Unseal Vault automatically
   include: init_unseal_join.yml
-  when: init_unseal_join == true and groups['vault_leader'] is defined
+  when: init_unseal_join == true

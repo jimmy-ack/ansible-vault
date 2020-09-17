@@ -112,7 +112,9 @@
   args:
     executable: /bin/bash
   become_user: "{{ vault_user }}"
-  ignore_errors: yes
+  register: autocomplete
+  failed_when: autocomplete.rc != 0 and autocomplete.rc != 1
+  changed_when: "'already installed' not in autocomplete.stderr"
 
 - name: Insert http(s) export in dotfile
   lineinfile:

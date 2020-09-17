@@ -29,7 +29,7 @@
 
 # Checking if vault already installed in the expected version
 - name: Check if vault is already installed
-  command: vault version
+  command: "{{ vault_bin_path }}/vault version"
   register: vault_install_check
   changed_when: false
   ignore_errors: true

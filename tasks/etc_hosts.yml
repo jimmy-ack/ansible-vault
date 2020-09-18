@@ -18,8 +18,8 @@
 - name: register /etc/hosts
   command:
     cmd: cat /etc/hosts
-  register: etc_hosts
+  register: etc_hosts_file
 
-- name: show etc_hosts
+- name: show etc_hosts_file
   debug:
-    msg: "{{ etc_hosts.stdout_lines }}"
+    msg: "{{ etc_hosts_file.stdout_lines }}"

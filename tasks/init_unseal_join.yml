@@ -12,14 +12,14 @@
       shell: |
         {{ vault_bin_path }}/vault status | grep Initialized | awk '{print $NF}'
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       register: init_status
 
     - name: Vault Sealed?
       shell: |
         {{ vault_bin_path }}/vault status | grep Sealed | awk '{print $NF}'
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       register: sealed_status
 
     - name: show init_status
@@ -57,7 +57,7 @@
       shell: |
         {{ vault_bin_path }}/vault operator init {{ shares }}\=1 {{ threshold }}\=1 > {{ vault_key_file }};
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       when: init_status.stdout == "false"
 
     - name: REGISTER key_1
@@ -72,7 +72,7 @@
       shell: |
         {{ vault_bin_path }}/vault operator unseal {{ key_1.stdout }};
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       register: leader_unseal
       when: sealed_status.stdout == "true"
 
@@ -92,13 +92,13 @@
     - name: VAULT JOIN
       shell: "{{ vault_bin_path }}/vault operator raft join https://{{vault_leader_hostname.stdout}}.{{ env_dns_suffix }}:{{ vault_port }}"
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       ignore_errors: true
     
     - name: VAULT UNSEAL
       shell: "{{ vault_bin_path }}/vault operator unseal {{ key_1.stdout }}"
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       ignore_errors: true
   when: inventory_hostname is not match(vault_leader_hostname.stdout)
 
@@ -108,7 +108,7 @@
     - name: VAULT STATUS
       shell: "{{ vault_bin_path }}/vault status"
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       register: status
       ignore_errors: true
 
@@ -119,12 +119,12 @@
     - name: VAULT LOGIN
       shell: "{{ vault_bin_path }}/vault login {{ root_token.stdout }}"
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
 
     - name: VAULT LIST PEERS
       shell: "{{ vault_bin_path }}/vault operator raft list-peers"
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       register: list_peers
     
     - name: show list_peers

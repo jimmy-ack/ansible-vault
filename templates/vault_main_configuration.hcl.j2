@@ -32,7 +32,7 @@ listener "tcp" {
 
 {% if vault_telemetry | bool -%}
   {% include vault_telemetry_conf with context %}
-{% endif %}}
+{% endif %}
 
 storage "raft" {
   path = "{{ vault_data_path }}"

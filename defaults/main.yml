@@ -101,7 +101,7 @@ vault_telemetry: false
 vault_telemetry_conf: vault_telemetry.j2
 dogstatsd_addr: localhost
 dogstatsd_port: 8125
-enable_hostname_label: true
+enable_hostname_label: "true"
 prometheus_retention_time: "0h"
 
 # ---------------------------------------------------------------------------

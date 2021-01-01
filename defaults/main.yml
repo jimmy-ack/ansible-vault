@@ -112,6 +112,15 @@ init_unseal_join: false
 vault_key_file: /etc/vault.d/key.txt
 env_dns_suffix: vault.example.com # Mandatory (cf. Readme)
 
+# ---------------------------------------------------------------------------
+# Service integration in consul 
+# ---------------------------------------------------------------------------
+vault_consul_registration: false
+consul_server_address: "localhost"
+consul_server_port: "8500"
+consul_server_scheme: "http"
+vault_service_name: "vault" 
+consul_token: "vault-consul-token"
 
 # ---------------------------------------------------------------------------
 # Useful flags

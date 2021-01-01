@@ -1,50 +1,101 @@
 ---
-- name: Ensure Vault group is created
-  group:
-    name: "{{ vault_group }}"
-    state: present
+- name: set vars for specified vault flavor
+  block:
+    - name: set vars for vault OSS
+      include_vars:
+        file: "{{ vault_flavor }}.yml"
+      when: vault_flavor == "oss"
 
-- name: Ensure Vault user is created
-  user:
-    name: "{{ vault_user }}"
-    comment: "{{ vault_user_comment }}"
-    group: "{{ vault_group }}"
-    system: true
+    - name: set vars for vault ENTERPRISE
+      include_vars:
+        file: "{{ vault_flavor }}.yml"
+      when: vault_flavor == "ent"
 
-- name: Ensure remote vault temporary dir exists
-  file:
-    path: /tmp/vault
-    state: directory
-  when: vault_install_required == true
+    - name: set vars for vault PREMIUM
+      include_vars:
+        file: "{{ vault_flavor }}.yml"
+      when: vault_flavor == "prem"
 
-- name: Ensure vault package checksum file is not present
-  file:
-    path: "/tmp/vault/{{ vault_shasums }}"
-    state: absent
+    - name: set vars for vault PREMIUM.HSM
+      include_vars:
+        file: "{{ vault_flavor }}.yml"
+      when: vault_flavor == "prem.hsm"
 
-- name: Ensure vault package file is not present
-  file:
-    path: "/tmp/vault/{{ vault_pkg }}"
-    state: absent
 
-- name: Get Vault package checksum file
-  get_url:
-    url: "{{ vault_checksum_file_url }}"
-    dest: "/tmp/vault/{{ vault_shasums }}"
-  when: vault_install_required == true
+- name: Vaul installation pre-checks
+  block:
+    - name: Ensure Vault group is created
+      group:
+        name: "{{ vault_group }}"
+        state: present
+
+    - name: Ensure Vault user is created
+      user:
+        name: "{{ vault_user }}"
+        comment: "{{ vault_user_comment }}"
+        group: "{{ vault_group }}"
+        system: true
+
+    - name: Ensure remote vault temporary dir exists
+      file:
+        path: /tmp/vault
+        state: directory
+
+    - name: Ensure vault package checksum file is not present
+      file:
+        path: "/tmp/vault/{{ vault_shasums }}"
+        state: absent
+
+    - name: Ensure vault package file is not present
+      file:
+        path: "/tmp/vault/{{ vault_pkg }}"
+        state: absent
 
 - name: Get Vault package checksum
+  block:
+    - name: Get Vault package checksum for OSS or ENT (public Internet)
+      get_url:
+        url: "{{ vault_checksum_file_url }}"
+        dest: "/tmp/vault/{{ vault_shasums }}"
+      when: (vault_flavor == "oss") or (vault_flavor == "ent")
+
+    - name: Get Vault package checksum for PREM or PREM.HSM (AWS S3 authentication required)
+      aws_s3:
+        bucket: "{{ vault_bucket }}"
+        object: "{{ vault_checksum_file_url }}"
+        dest: "/tmp/vault/{{ vault_shasums }}"
+        overwrite: different
+        ignore_nonexistent_bucket: true
+        mode: get
+        aws_access_key: "{{ vault_s3_access_key }}"
+        aws_secret_key: "{{ vault_s3_secret_key }}"
+      when: (vault_flavor == "prem") or (vault_flavor == "prem.hsm")
+
+- name: Register Vault package checksum
   shell: "grep {{ vault_pkg }} /tmp/vault/{{ vault_shasums }}"
   register: vault_sha256
-  when: vault_install_required == true
 
-- name: "Download Vault"
-  get_url:
-    url: "{{ vault_zip_url }}"
-    dest: "/tmp/vault/{{ vault_pkg }}"
-    checksum: "sha256:{{ vault_sha256.stdout.split(' ')|first }}"
-    timeout: "42"
-  when: vault_install_required == true
+- name: Download Vault
+  block:
+    - name: Download Vault OSS or ENT (public Internet)
+      get_url:
+        url: "{{ vault_zip_url }}"
+        dest: "/tmp/vault/{{ vault_pkg }}"
+        checksum: "sha256:{{ vault_sha256.stdout.split(' ')|first }}"
+        timeout: "42"
+      when: (vault_flavor == "oss") or (vault_flavor == "ent")
+    
+    - name: Download Vault PREM or PREM.HSM (AWS S3 authentication required)
+      aws_s3:
+        bucket: "{{ vault_bucket }}"
+        object:  "{{ vault_zip_url }}"
+        dest: "/tmp/vault/{{ vault_pkg }}"
+        overwrite: different
+        ignore_nonexistent_bucket: true
+        mode: get
+        aws_access_key: "{{ vault_s3_access_key }}"
+        aws_secret_key: "{{ vault_s3_secret_key }}"
+      when: (vault_flavor == "prem") or (vault_flavor == "prem.hsm")
 
 - name: Unarchive Vault and install binary
   unarchive:
@@ -55,16 +106,15 @@
     group: "{{ vault_group }}"
     mode: "0755"
   notify: Restart vault
-  when: vault_install_required == true
 
 - name: Install autocomplete for vault user
-  #shell: "su {{ vault_user }} -c 'vault -autocomplete-install'"
   shell: "{{ vault_bin_path }}/vault -autocomplete-install"
   args:
     executable: /bin/bash
   become_user: "{{ vault_user }}"
-  ignore_errors: yes
-  when: vault_install_required == true
+  register: autocomplete
+  failed_when: autocomplete.rc != 0 and autocomplete.rc != 1
+  changed_when: "'already installed' not in autocomplete.stderr"
 
 - name: Insert http(s) export in dotfile
   lineinfile:
@@ -78,7 +128,6 @@
     capability: cap_ipc_lock=+ep
     state: present
   ignore_errors: true
-  when: vault_install_required == true
 
 - name: Ensure vault directories have been created
   file:
@@ -101,7 +150,6 @@
       owner: "{{ vault_user }}"
       group: "{{ vault_group }}"
     when: vault_tls_disable == "false"
-
 
   - name: Ensure Vault SSL certificate and key are on the server
     copy:
@@ -137,7 +185,6 @@
   - name: Ensure TLS CA certificate has been added to OS keystore
     command: update-ca-trust extract
     when: vault_tls_client_ca_file is defined
-
   when: vault_tls_disable == "false"
 
 - name: Debian init script

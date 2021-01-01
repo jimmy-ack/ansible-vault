@@ -30,6 +30,10 @@ listener "tcp" {
   tls_disable = "{{ vault_tls_disable | bool | lower }}"
 }
 
+{% if vault_telemetry | bool -%}
+  {% include vault_telemetry_conf with context %}
+{% endif %}
+
 storage "raft" {
   path = "{{ vault_data_path }}"
   node_id = "{{ vault_raft_node_id }}"

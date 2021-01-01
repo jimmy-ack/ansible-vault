@@ -5,7 +5,6 @@
     name: vault
   ignore_errors: true
 
-#######
 
 - name: Check Vault status (Initialized & Sealed)
   block:
@@ -13,17 +12,15 @@
       shell: |
         {{ vault_bin_path }}/vault status | grep Initialized | awk '{print $NF}'
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       register: init_status
-      # no_log: true
 
     - name: Vault Sealed?
       shell: |
         {{ vault_bin_path }}/vault status | grep Sealed | awk '{print $NF}'
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       register: sealed_status
-      # no_log: true
 
     - name: show init_status
       debug:
@@ -49,44 +46,34 @@
             threshold: "-recovery-threshold"
       when: vault_auto_unseal == true
 
-#######
 
 - name: LEADER SETUP
   block:
+    - name: register future VAULT_LEADER hostname
+      command: hostname
+      register: vault_leader_hostname
+
     - name: VAULT INIT
       shell: |
         {{ vault_bin_path }}/vault operator init {{ shares }}\=1 {{ threshold }}\=1 > {{ vault_key_file }};
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       when: init_status.stdout == "false"
 
     - name: REGISTER key_1
       shell: "grep 'Key 1:' {{ vault_key_file }} | awk '{print $NF}'"
       register: key_1
-      # no_log: true
 
     - name: REGISTER root_token
       shell: "grep 'Initial Root Token:' {{ vault_key_file }} | awk '{print $NF}'"
       register: root_token
-      # no_log: true
-
-    - name: SET_FACT key_1
-      set_fact:
-        set_fact_key_1="{{ key_1.stdout }}"
-      # no_log: true
-
-    - name: SET_FACT root_token
-      set_fact:
-        set_fact_root_token="{{ root_token.stdout }}"
-      # no_log: true
 
     - name: VAULT UNSEAL
       shell: |
         {{ vault_bin_path }}/vault operator unseal {{ key_1.stdout }};
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       register: leader_unseal
-      # no_log: true
       when: sealed_status.stdout == "true"
 
     - name: Wait for Vault to unseal (5 sec.)
@@ -97,38 +84,32 @@
       debug:
         msg: "{{ leader_unseal }}"
       when: leader_unseal is defined
-  when: inventory_hostname in groups['vault_leader']
+  run_once: true
 
-#######
 
 - name: FOLLOWERS SETUP
   block:
     - name: VAULT JOIN
-      shell: "{{ vault_bin_path }}/vault operator raft join https://{{item}}:{{ vault_port }}"
+      shell: "{{ vault_bin_path }}/vault operator raft join https://{{vault_leader_hostname.stdout}}.{{ env_dns_suffix }}:{{ vault_port }}"
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
-      loop: "{{ groups['vault_leader'] }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       ignore_errors: true
     
     - name: VAULT UNSEAL
-      shell: "{{ vault_bin_path }}/vault operator unseal {{ hostvars[item]['set_fact_key_1'] }}"
+      shell: "{{ vault_bin_path }}/vault operator unseal {{ key_1.stdout }}"
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       ignore_errors: true
-      loop: "{{ groups['vault_leader'] }}"
-      # no_log: true
-  when: inventory_hostname in groups['vault_followers']
+  when: inventory_hostname is not match(vault_leader_hostname.stdout)
 
-#######
 
 - name: FINAL STEPS
   block:
     - name: VAULT STATUS
       shell: "{{ vault_bin_path }}/vault status"
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       register: status
-      # no_log: true
       ignore_errors: true
 
     - name: SHOW VAULT STATUS
@@ -136,21 +117,16 @@
         msg: "{{ status.stdout_lines }}"
 
     - name: VAULT LOGIN
-      shell: "{{ vault_bin_path }}/vault login {{ hostvars[item]['set_fact_root_token'] }}"
+      shell: "{{ vault_bin_path }}/vault login {{ root_token.stdout }}"
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
-      loop: "{{ groups['vault_leader'] }}"
-      # no_log: true
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
 
     - name: VAULT LIST PEERS
       shell: "{{ vault_bin_path }}/vault operator raft list-peers"
       environment:
-        VAULT_ADDR: "https://{{ ansible_hostname }}.{{ env_dns_suffix }}:{{ vault_port }}"
+        VAULT_ADDR: "https://{{ inventory_hostname }}:{{ vault_port }}"
       register: list_peers
-      # no_log: true
     
     - name: show list_peers
       debug:
         msg: "{{ list_peers.stdout_lines }}"
-
-#######

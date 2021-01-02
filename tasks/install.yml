@@ -21,7 +21,6 @@
         file: "{{ vault_flavor }}.yml"
       when: vault_flavor == "prem.hsm"
 
-
 - name: Vaul installation pre-checks
   block:
     - name: Ensure Vault group is created
@@ -106,15 +105,6 @@
     group: "{{ vault_group }}"
     mode: "0755"
   notify: Restart vault
-
-- name: Install autocomplete for vault user
-  shell: "{{ vault_bin_path }}/vault -autocomplete-install"
-  args:
-    executable: /bin/bash
-  become_user: "{{ vault_user }}"
-  register: autocomplete
-  failed_when: autocomplete.rc != 0 and autocomplete.rc != 1
-  changed_when: "'already installed' not in autocomplete.stderr"
 
 - name: Insert http(s) export in dotfile
   lineinfile:

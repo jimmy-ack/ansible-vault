@@ -1,5 +1,18 @@
 telemetry {
-  dogstatsd_addr = "{{ dogstatsd_addr}}:{{dogstatsd_port}}"
+  usage_gauge_period = "{{ usage_gauge_period }}"
+  maximum_gauge_cardinality = {{ maximum_gauge_cardinality }}
+  disable_hostname = {{ disable_hostname }}
   enable_hostname_label = {{ enable_hostname_label }}
+
+{% if statsd_address is defined and statsd_address != None %}
+  statsd_address = "{{ statsd_address }}:{{ statsd_port }}"
+{% endif %}
+
+{% if dogstatsd_addr is defined and dogstatsd_addr != None %}
+  dogstatsd_addr = "{{ dogstatsd_addr }}:{{ dogstatsd_port }}"
+{% endif %}
+
+{% if prometheus_retention_time is defined and prometheus_retention_time != None %}
   prometheus_retention_time = "{{ prometheus_retention_time }}"
+{% endif %}
 }

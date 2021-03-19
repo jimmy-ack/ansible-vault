@@ -100,13 +100,23 @@ vault_awskms_endpoint: "{{ lookup('env','AWS_KMS_ENDPOINT') | default('', false)
 # Telemetry settings
 # ---------------------------------------------------------------------------
 
-# Enabling/Disabling vault_telemetry
+# Enabling/Disabling vault_telemetry (https://www.vaultproject.io/docs/configuration/telemetry)
 vault_telemetry: false
 vault_telemetry_conf: vault_telemetry.j2
-dogstatsd_addr: localhost
+
+# common
+usage_gauge_period: "10m"
+maximum_gauge_cardinality: 500
+disable_hostname: "false"
+enable_hostname_label: "false"
+# statsd
+statsd_address:
+statsd_port: 8125
+# dogstatsd
+dogstatsd_addr:
 dogstatsd_port: 8125
-enable_hostname_label: "true"
-prometheus_retention_time: "0h"
+# prometheus
+prometheus_retention_time:
 
 # ---------------------------------------------------------------------------
 # etc_hosts + init_unseal_join variables

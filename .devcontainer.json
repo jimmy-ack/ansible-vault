@@ -1,0 +1,8 @@
+{
+  "build": { "dockerfile": "Dockerfile" },
+  "customizations": {
+    "vscode": {
+      "extensions": ["hashicorp.terraform", "ms-azuretools.vscode-docker", "redhat.ansible"]
+    }
+  }
+}

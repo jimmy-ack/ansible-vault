@@ -1,2 +1,10 @@
-localhost
+[vault_prod]
+13.73.152.109
+13.95.10.94
+13.95.9.152
 
+[vault_prod:vars]
+ansible_connection=ssh
+ansible_user=vault
+ansible_ssh_pass=Vault123!
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'

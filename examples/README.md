@@ -1,4 +1,0 @@
-Examples usage
-=========
-
-TO DO

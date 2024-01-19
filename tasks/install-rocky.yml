@@ -1,0 +1,45 @@
+---
+- name: set vars for Rocky 
+  include_vars:
+    file: "{{ ansible_distribution }}.yml"
+
+- name: Ensure required OS packages are installed
+  become: true
+  package:
+    name: "{{ vault_os_packages }}"
+    state: present
+    update_cache: true
+
+- name: Ensure Hashicorp repository has been added
+  become: true
+  ansible.builtin.yum_repository:
+    name: hashicorp 
+    description: Hashicorp Stable - $basearch
+    baseurl: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable
+    gpgcheck: true
+    gpgkey: https://rpm.releases.hashicorp.com/gpg
+
+- name: Ensure vault-enterprise has been installed 
+  become: true
+  package:
+    name: "vault-enterprise"
+    state: present
+    update_cache: true
+
+- name: Ensure plugins directory has been created
+  become: true
+  ansible.builtin.file:
+    path: "{{ vault_plugin_path }}" 
+    state: directory
+    mode: '0755'
+    owner: vault
+    group: vault
+
+- name: Ensure vault log directory has been created
+  become: true
+  ansible.builtin.file:
+    path: "{{ vault_log_path }}" 
+    state: directory
+    mode: '0755'
+    owner: vault
+    group: vault

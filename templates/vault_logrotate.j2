@@ -1,6 +1,9 @@
+# {{ ansible_managed }}
+
 {{ vault_log_path }}/vault.log
 {
     missingok
+    copytruncate
     rotate {{ vault_logrotate_freq }}
     daily
     dateext

@@ -1,30 +1,13 @@
 ---
-# Checking first if environment is compatible with this role and if vault is already installed on nodes
-- name: Ensure compatibility with this role and checking if vault is already installed
-  include: asserts.yml
+# Checking first if environment is compatible with this role
+- name: Ensure compatibility with this role
+  include_tasks: asserts.yml
 
-# Ensure requirements are in installed on nodes
-- name: Ensure required OS packages are installed
-  include: requirements.yml
-  when: vault_install_required == true or vault_reconfigure == true
+# Installing vault on servers
+- name: Ensure vault is installed (Rocky)
+  include_tasks: install-rocky.yml
+  when: ansible_distribution == 'Rocky'
 
-# Installing vault on nodes only if install is required
-- name: Ensure vault is installed
-  include: install.yml
-  when: vault_install_required == true or vault_reconfigure == true
-
-# Configuring vault only if install is required or if auto unseal is enabled
-- name: Ensure vault configuration files are defined as expected
-  include: configure.yml
-  when: vault_install_required == true or vault_auto_unseal == true or vault_reconfigure == true
-
-# Add /etc/hosts vault entries if no dns is available
-- name: Configure /etc/hosts
-  include: etc_hosts.yml
-  when: etc_hosts == true
-
-# Vault automatic init + unseal (shamir & cloud-kms compatible) + join
-# Use only for dev. env. DO NOT use in production
-- name: Initialize and Unseal Vault automatically
-  include: init_unseal_join.yml
-  when: init_unseal_join == true
+# Configuring vault 
+- name: Ensure vault configuration has been done as expected 
+  include_tasks: configure.yml

@@ -3,3 +3,4 @@
 terraform.tfstate
 terraform.tfstate.backup
 vault.hclic
+variables_secrets.tf

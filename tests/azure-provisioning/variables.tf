@@ -1,20 +1,7 @@
 ### AZURE CONNECTIONS SETTINGS ###
 
-variable "client_secret" {
-  default = "2D28Q~4QpQxTp7WG6iHTJKGATqZDwnj1u6LK6aTT"
-}
-
-variable "client_id" {
-  default = "a196a745-ab69-4043-92bc-9cc4dcc9c2f8"
-}
-
-variable "tenant_id" {
-  default = "f9056c40-d204-4118-b01d-bb624708154c"
-}
-
-variable "subscription_id" {
-  default = "9ca13539-bff8-42c2-bad9-106ee8827ff4"
-}
+# Add variables for Azure : 
+# client_id, client_secret, tenant_id, subscription_id
 
 variable "resource_group_name" {
   default = "rg-shared-sandbox"

@@ -14,9 +14,6 @@ vault_plugin_path: "{{ vault_data_path }}/plugins"
 vault_license_path: "{{ vault_data_path }}/vault.hclic"
 vault_log_path: "/var/log/vault"
 vault_raft_data_path: "{{ vault_data_path }}/data/raft"
-vault_tls_ca_file: "ca.crt" 
-vault_client_tls_cert_file: ""
-vault_client_tls_key_file: "" 
 
 # Vault configuration vars
 vault_cluster_name: "my-cluster"
@@ -37,12 +34,14 @@ vault_disable_mlock: true
 # TLS variables
 vault_tls_disable: false
 vault_tls_config_path: "{{ vault_data_path }}/tls"
-#vault_tls_client_ca_file: "ca.crt"
 vault_tls_cert_file: "vault-nodes.crt"
 vault_tls_key_file: "vault-nodes.key"
 vault_tls_min_version: "tls12"
 vault_tls_require_and_verify_client_cert: false
 vault_tls_disable_client_certs: true
+vault_tls_ca_file: "ca.crt" 
+vault_client_tls_cert_file: ""
+vault_client_tls_key_file: "" 
 
 # Raft backend
 vault_raft_node_id: "{{ ansible_fqdn }}"

@@ -32,7 +32,7 @@
 - name: Copy certificates with owner and permissions
   ansible.builtin.copy:
     src:  "{{vault_tls_cert_file }}"
-    dest: "{{ vault_tls_config_path }}/{{ ansible_hostname }}.crt" 
+    dest: "{{ vault_tls_config_path }}/" 
     owner: vault
     group: vault
     mode: '0644'
@@ -41,7 +41,7 @@
 - name: Copy keys with owner and permissions
   ansible.builtin.copy:
     src:  "{{vault_tls_key_file }}"
-    dest: "{{ vault_tls_config_path }}/{{ ansible_hostname }}.key" 
+    dest: "{{ vault_tls_config_path }}/" 
     owner: vault
     group: vault
     mode: '0600'

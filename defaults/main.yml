@@ -14,10 +14,9 @@ vault_plugin_path: "{{ vault_data_path }}/plugins"
 vault_license_path: "{{ vault_data_path }}/vault.hclic"
 vault_log_path: "/var/log/vault"
 vault_raft_data_path: "{{ vault_data_path }}/data/raft"
-vault_backend_tls_certs_path: "" # > to be defined
-vault_backend_tls_private_path: "" # > to be defined
-vault_backend_tls_cert_file: "" # > to be defined
-vault_backend_tls_key_file: "" # > to be defined
+vault_tls_ca_file: "ca.crt" 
+vault_client_tls_cert_file: ""
+vault_client_tls_key_file: "" 
 
 # Vault configuration vars
 vault_cluster_name: "my-cluster"
@@ -35,13 +34,12 @@ vault_disable_mlock: true
 #vault_raft_max_entry_size: ""
 #vault_raft_autopilot_reconcile_interval: ""
 
-
 # TLS variables
 vault_tls_disable: false
 vault_tls_config_path: "{{ vault_data_path }}/tls"
 #vault_tls_client_ca_file: "ca.crt"
-vault_tls_cert_file: "tls.crt"
-vault_tls_key_file: "tls.key"
+vault_tls_cert_file: "vault-nodes.crt"
+vault_tls_key_file: "vault-nodes.key"
 vault_tls_min_version: "tls12"
 vault_tls_require_and_verify_client_cert: false
 vault_tls_disable_client_certs: true
@@ -55,6 +53,8 @@ vault_protocol: "{% if vault_tls_disable %}http{% else %}https{% endif %}"
 vault_cluster_disable: false
 vault_cluster_addr: "{{ vault_protocol }}://{{ vault_cluster_address }}"
 #vault_redirect_address: "<lb ip address>"
-vault_api_addr: "{{ vault_protocol }}://{{ vault_redirect_address | default(hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address']) }}:{{ vault_port }}"
-vault_raft_cluster_members: ["10.0.1.4", "10.0.1.5", "10.0.1.6"]
+# using 443 port by default for api access as in most cases we have a load balancer deployed and used
+vault_api_port: "443"
+vault_api_addr: "{{ vault_protocol }}://{{ vault_redirect_address | default(hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address']) }}:{{ vault_api_port }}"
+vault_raft_cluster_members: ["vault-node-0", "vault-node-1", "vault-node-2"]
 #vault_raft_leader_tls_servername: ""

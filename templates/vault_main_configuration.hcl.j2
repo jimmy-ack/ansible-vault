@@ -48,11 +48,11 @@ storage "raft" {
   {% for peer in vault_raft_cluster_members -%}
   retry_join {
     leader_api_addr = "{{ vault_protocol }}://{{ peer }}:{{ vault_port }}"
-    {% if vault_raft_leader_tls_servername is defined and vault_backend_tls_ca_file is defined -%}
+    leader_ca_cert_file = "{{ vault_tls_config_path }}/{{ vault_tls_ca_file }}"
+    {% if vault_raft_leader_tls_servername is defined and vault_tls_ca_file is defined -%}
     leader_tls_servername = "{{ vault_raft_leader_tls_servername }}"
-    leader_ca_cert_file = "{{ vault_backend_tls_certs_path }}/{{ vault_backend_tls_ca_file }}"
-    leader_client_cert_file = "{{ vault_backend_tls_certs_path }}/{{ vault_backend_tls_cert_file }}"
-    leader_client_key_file = "{{ vault_backend_tls_private_path }}/{{ vault_backend_tls_key_file }}"
+    leader_client_cert_file = "{{ vault_tls_config_path }}/{{ vault_client_tls_cert_file }}"
+    leader_client_key_file = "{{ vault_tls_config_path }}/{{ vault_client_tls_key_file }}"
     {% endif %}
   }
   {% endfor %}

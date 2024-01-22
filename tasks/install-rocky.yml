@@ -43,3 +43,12 @@
     mode: '0755'
     owner: vault
     group: vault
+
+- name: Ensure vault raft directory has been created
+  become: true
+  ansible.builtin.file:
+    path: "{{ vault_raft_data_path }}" 
+    state: directory
+    mode: '0755'
+    owner: vault
+    group: vault

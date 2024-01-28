@@ -2,3 +2,7 @@
 - name: Restart vault
   become: true
   service: name=vault state=restarted
+
+- name: Restart rsyslogd
+  become: true
+  service: name=rsyslog state=restarted

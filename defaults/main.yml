@@ -1,18 +1,22 @@
 ---
 
+### Misc. ###
 vault_license: "vault.hclic"
 
-# Logging
+### Logging ###
+vault_log_path: "/var/log/vault"
+# server logging
+vault_log_level: "info" # https://developer.hashicorp.com/vault/tutorials/monitoring/troubleshooting-vault#vault-server-logs
 vault_enable_logrotate: true
-vault_logrotate_freq: 7
 vault_logrotate_template: "vault_logrotate.j2"
+vault_logrotate_freq: 7
+
 
 # Vault paths
 vault_config_path: "/etc/vault.d"
 vault_data_path: "/opt/vault"
 vault_plugin_path: "{{ vault_data_path }}/plugins" 
 vault_license_path: "{{ vault_data_path }}/vault.hclic"
-vault_log_path: "/var/log/vault"
 vault_raft_data_path: "{{ vault_data_path }}/data/raft"
 
 # Vault configuration vars

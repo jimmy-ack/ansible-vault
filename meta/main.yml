@@ -4,7 +4,7 @@ galaxy_info:
   company: Acknowledge 
   license: license (GPL-2.0-or-later, MIT, etc)
 
-  min_ansible_version: 2.15
+  min_ansible_version: "2.15"
 
   galaxy_tags: []
     # List tags for your role here, one per line. A tag is a keyword that describes

@@ -34,6 +34,11 @@ StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=vault
 {% endif %}
+{% if vault_enable_proxy -%}
+Environment=NO_PROXY={{ vault_no_proxy }}
+Environment=HTTP_PROXY={{ vault_http_proxy }}
+Environment=HTTPS_PROXY={{ vault_https_proxy }}
+{% endif %}
 
 [Install]
 WantedBy=multi-user.target

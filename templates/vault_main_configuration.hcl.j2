@@ -28,6 +28,7 @@ listener "tcp" {
 }
 
 storage "raft" {
+
   path = "{{ vault_raft_data_path }}"
   node_id = "{{ vault_raft_node_id }}"
   {% if vault_raft_performance_multiplier is defined and vault_raft_performance_multiplier %}
@@ -45,8 +46,8 @@ storage "raft" {
   {% if vault_raft_autopilot_reconcile_interval is defined and vault_raft_autopilot_reconcile_interval %}
   autopilot_reconcile_interval = "{{ vault_raft_autopilot_reconcile_interval }}"
   {% endif %}
+
   {% for peer in vault_raft_cluster_members -%}
-  
   retry_join {
     leader_api_addr = "{{ vault_protocol }}://{{ peer }}:{{ vault_port }}"
     
@@ -59,9 +60,9 @@ storage "raft" {
     leader_client_cert_file = "{{ vault_tls_config_path }}/{{ vault_client_tls_cert_file }}"
     leader_client_key_file = "{{ vault_tls_config_path }}/{{ vault_client_tls_key_file }}"
     {% endif %}
-  
   }
   {% endfor %}
+
 }
 
 // HashiCorp recommends disabling mlock when using Raft.

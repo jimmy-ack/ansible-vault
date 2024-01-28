@@ -1,7 +1,7 @@
 ---
 
 ### Misc. ###
-vault_license: "vault.hclic"
+vault_license: "vault.hclic" # local path to license file
 
 ### Logging ###
 vault_log_path: "/var/log/vault"
@@ -15,13 +15,12 @@ vault_rsyslogd: true # enable rsyslog configuration
 vault_rsyslogd_template: "vault_rsyslogd.j2" 
 vault_rsyslogd_path: "/etc/rsyslog.d"
 
-
 ### Vault configuration ###
 # Vault paths > these paths are used to define others variables or directly in tasks
 vault_config_path: "/etc/vault.d"
 vault_data_path: "/opt/vault"
 vault_plugin_path: "{{ vault_data_path }}/plugins" 
-vault_license_path: "{{ vault_data_path }}/{{ vault_license }}"
+vault_license_path: "{{ vault_data_path }}/vault.hclic"
 vault_raft_data_path: "{{ vault_data_path }}/data/raft"
 
 # Global settings
@@ -36,7 +35,13 @@ vault_max_lease_ttl: "768h"
 vault_default_lease_ttl: "768h"
 vault_disable_mlock: true
 
-# tls variables
+# Proxy settings > https://developer.hashicorp.com/vault/tutorials/operations/configure-vault#http_proxy 
+vault_enable_proxy: true # define to true to enable proxy usage
+vault_http_proxy: "http://myproxy.acknowledge.local:8080"
+vault_https_proxy: "{{ vault_http_proxy }}" # define explicitly if different than http_proxy
+vault_no_proxy: "*.acknowledge.local" # no proxy configuration 
+
+# Tls variables
 vault_tls_disable: false
 vault_tls_config_path: "{{ vault_data_path }}/tls"
 vault_tls_cert_file: "vault-nodes.crt"

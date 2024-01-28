@@ -20,7 +20,7 @@ SecureBits=keep-caps
 AmbientCapabilities=CAP_IPC_LOCK
 CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
 NoNewPrivileges=yes
-ExecStart=/usr/bin/vault server -config=/etc/vault.d/vault.hcl >> {{ vault_log_path }}/vault.log 2>&1
+ExecStart=/usr/bin/vault server -config=/etc/vault.d/vault.hcl -log-level={{ vault_log_level }} >> {{ vault_log_path }}/vault.log 2>&1
 ExecReload=/bin/kill --signal HUP $MAINPID
 KillMode=process
 KillSignal=SIGINT

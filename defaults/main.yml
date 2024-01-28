@@ -10,7 +10,10 @@ vault_log_level: "info" # https://developer.hashicorp.com/vault/tutorials/monito
 vault_enable_logrotate: true
 vault_logrotate_template: "vault_logrotate.j2"
 vault_logrotate_freq: 7
-
+# rsyslog usage : required for Rocky Linux
+vault_rsyslogd: true # enable rsyslog configuration
+vault_rsyslogd_template: "vault_rsyslogd.j2" 
+vault_rsyslogd_path: "/etc/rsyslog.d"
 
 # Vault paths
 vault_config_path: "/etc/vault.d"
@@ -19,7 +22,7 @@ vault_plugin_path: "{{ vault_data_path }}/plugins"
 vault_license_path: "{{ vault_data_path }}/vault.hclic"
 vault_raft_data_path: "{{ vault_data_path }}/data/raft"
 
-# Vault configuration vars
+### Vault configuration vars ###
 vault_cluster_name: "my-cluster"
 vault_ui: true
 vault_port: 8200

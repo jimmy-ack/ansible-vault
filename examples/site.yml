@@ -1,6 +1,0 @@
----
-- hosts: vault_nodes
-  become: true
-  become_method: sudo
-  roles:
-    - ../../ansible-lss-vault

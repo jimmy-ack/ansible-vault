@@ -1,75 +1,56 @@
 ---
-# ---------------------------------------------------------------------------
-# Core variables
-# ---------------------------------------------------------------------------
 
-# Package variables
-vault_version: "1.5.3"
-vault_flavor: oss # values can be: oss (default) / ent / prem / prem.hsm
-vault_s3_access_key: 
-vault_s3_secret_key: 
-vault_os: "{{ ansible_system|lower }}"
-vault_architecture: "amd64"
+### Misc. ###
+vault_license: "vault.hclic"
 
-# System user and group
-vault_user: "vault"
-vault_group: "bin"
-vault_user_comment: "vault user"
-
-# Logging
-vault_enable_logrotate: true
-vault_logrotate_freq: 7
-vault_logrotate_template: "vault_logrotate.j2"
-
-# Paths
-vault_bin_path: "/usr/local/bin"
-vault_config_path: "/etc/vault.d"
-vault_plugin_path: "/usr/local/lib/vault/plugins"
-vault_data_path: "/var/vault"
+### Logging ###
 vault_log_path: "/var/log/vault"
-vault_run_path: "/var/run/vault"
+# server logging
+vault_log_level: "info" # https://developer.hashicorp.com/vault/tutorials/monitoring/troubleshooting-vault#vault-server-logs
+vault_enable_logrotate: true
+vault_logrotate_template: "vault_logrotate.j2"
+vault_logrotate_freq: 7
+# rsyslog usage : required for Rocky Linux
+vault_rsyslogd: true # enable rsyslog configuration
+vault_rsyslogd_template: "vault_rsyslogd.j2" 
+vault_rsyslogd_path: "/etc/rsyslog.d"
 
-# ---------------------------------------------------------------------------
-# Initialization and startup script templates
-# ---------------------------------------------------------------------------
+# Vault paths
+vault_config_path: "/etc/vault.d"
+vault_data_path: "/opt/vault"
+vault_plugin_path: "{{ vault_data_path }}/plugins" 
+vault_license_path: "{{ vault_data_path }}/vault.hclic"
+vault_raft_data_path: "{{ vault_data_path }}/data/raft"
 
-vault_debian_init_template: "vault_service_debian_init.j2"
-vault_systemd_template: "vault_service_systemd.j2"
-
-# ---------------------------------------------------------------------------
-# Vault variables
-# ---------------------------------------------------------------------------
-
-vault_cluster_name: "dc1"
-vault_datacenter: "dc1"
-vault_log_level: "info"
+### Vault configuration vars ###
+vault_cluster_name: "my-cluster"
 vault_ui: true
 vault_port: 8200
 vault_cluster_port: 8201
-vault_main_config: "{{ vault_config_path }}/vault_main.hcl"
+vault_main_config: "{{ vault_config_path }}/vault.hcl"
 vault_main_configuration_template: vault_main_configuration.hcl.j2
+vault_max_lease_ttl: "768h"
+vault_default_lease_ttl: "768h"
+vault_disable_mlock: true
+#vault_raft_performance_multiplier: ""
+#vault_raft_trailing_logs: ""
+#vault_raft_snapshot_threshold: ""
+#vault_raft_max_entry_size: ""
+#vault_raft_autopilot_reconcile_interval: ""
 
-# ---------------------------------------------------------------------------
 # TLS variables
-# ---------------------------------------------------------------------------
-
-vault_tls_disable: "true"
-vault_tls_config_path: "{{ vault_config_path }}/tls"
-#vault_tls_src_files: ""
-#vault_tls_client_ca_file: "ca.crt"
-#vault_tls_cert_file: "server.crt"
-#vault_tls_key_file: "server.key"
-#vault_tls_min_version: "tls12"
-#vault_tls_cipher_suites: ""
-#vault_tls_prefer_server_cipher_suites: ""
+vault_tls_disable: false
+vault_tls_config_path: "{{ vault_data_path }}/tls"
+vault_tls_cert_file: "vault-nodes.crt"
+vault_tls_key_file: "vault-nodes.key"
+vault_tls_min_version: "tls12"
 vault_tls_require_and_verify_client_cert: false
-vault_tls_disable_client_certs: false
+vault_tls_disable_client_certs: true
+vault_tls_ca_file: "ca.crt" 
+vault_client_tls_cert_file: ""
+vault_client_tls_key_file: "" 
 
-
-# ---------------------------------------------------------------------------
 # Raft backend
-# ---------------------------------------------------------------------------
-
 vault_raft_node_id: "{{ ansible_fqdn }}"
 vault_iface: "{{ lookup('env','VAULT_IFACE') | default(ansible_default_ipv4.interface, true) }}"
 vault_address: "{{ hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address'] }}"
@@ -78,56 +59,8 @@ vault_protocol: "{% if vault_tls_disable %}http{% else %}https{% endif %}"
 vault_cluster_disable: false
 vault_cluster_addr: "{{ vault_protocol }}://{{ vault_cluster_address }}"
 #vault_redirect_address: "<lb ip address>"
-vault_api_addr: "{{ vault_protocol }}://{{ vault_redirect_address | default(hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address']) }}:{{ vault_port }}"
-
-# ---------------------------------------------------------------------------
-# Seal variables
-# ---------------------------------------------------------------------------
-
-# Enabling/Disabling auto unseal
-vault_auto_unseal: false
-
-# awskms seal
-vault_awskms: false
-vault_awskms_backend: vault_seal_awskms.j2
-vault_awskms_region: "{{ lookup('env','AWS_DEFAULT_REGION') | default('us-east-1', false) }}"
-vault_awskms_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') | default('', false) }}"
-vault_awskms_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') | default('', false) }}"
-vault_awskms_key_id: "{{ lookup('env','VAULT_AWSKMS_SEAL_KEY_ID') | default('', false) }}"
-vault_awskms_endpoint: "{{ lookup('env','AWS_KMS_ENDPOINT') | default('', false) }}"
-
-# ---------------------------------------------------------------------------
-# Telemetry settings
-# ---------------------------------------------------------------------------
-
-# Enabling/Disabling vault_telemetry
-vault_telemetry: false
-vault_telemetry_conf: vault_telemetry.j2
-dogstatsd_addr: localhost
-dogstatsd_port: 8125
-enable_hostname_label: "true"
-prometheus_retention_time: "0h"
-
-# ---------------------------------------------------------------------------
-# etc_hosts + init_unseal_join variables
-# ---------------------------------------------------------------------------
-etc_hosts: false
-init_unseal_join: false
-vault_key_file: /etc/vault.d/key.txt
-env_dns_suffix: vault.example.com # Mandatory (cf. Readme)
-
-# ---------------------------------------------------------------------------
-# Service integration in consul 
-# ---------------------------------------------------------------------------
-vault_consul_registration: false
-consul_server_address: "localhost"
-consul_server_port: "8500"
-consul_server_scheme: "http"
-vault_service_name: "vault" 
-consul_token: "vault-consul-token"
-
-# ---------------------------------------------------------------------------
-# Useful flags
-# ---------------------------------------------------------------------------
-# Set vault_reconfigure to true if you need to force to reconfigure vault
-vault_reconfigure: false
+# using 443 port by default for api access as in most cases we have a load balancer deployed and used
+vault_api_port: "443"
+vault_api_addr: "{{ vault_protocol }}://{{ vault_redirect_address | default(hostvars[inventory_hostname]['ansible_'+vault_iface]['ipv4']['address']) }}:{{ vault_api_port }}"
+vault_raft_cluster_members: ["vault-node-0", "vault-node-1", "vault-node-2"]
+#vault_raft_leader_tls_servername: ""

@@ -1,0 +1,6 @@
+---
+vault_os_packages:
+  - yum-utils
+  - net-tools
+
+vault_systemd_filepath: "/usr/lib/systemd/system/vault.service"

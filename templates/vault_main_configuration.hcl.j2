@@ -1,59 +1,69 @@
+# {{ ansible_managed }}
+
 cluster_name = "{{ vault_cluster_name }}"
+license_path = "{{ vault_license_path }}"
+disable_clustering = "{{ vault_cluster_disable }}"
 cluster_addr = "{{ vault_cluster_addr }}"
 api_addr = "{{ vault_api_addr }}"
+
+max_lease_ttl = "{{ vault_max_lease_ttl }}"
+default_lease_ttl = "{{ vault_default_lease_ttl }}"
 
 plugin_directory = "{{ vault_plugin_path }}"
 
 listener "tcp" {
   address = "{{ vault_address }}:{{ vault_port }}"
   cluster_address = "{{ vault_cluster_address }}"
+  tls_disable = "{{ vault_tls_disable | bool | lower }}"
   {% if not (vault_tls_disable | bool) -%}
-  tls_cert_file = "{{ vault_tls_config_path }}/{{ vault_tls_cert_file }}"
-  tls_key_file = "{{ vault_tls_config_path }}/{{ vault_tls_key_file }}"
   {% if vault_tls_client_ca_file is defined -%}
   tls_client_ca_file="{{ vault_tls_config_path }}/{{ vault_tls_client_ca_file }}"
-  {% endif -%}
+  {% endif %}
+  tls_cert_file = "{{ vault_tls_config_path }}/{{ vault_tls_cert_file }}"
+  tls_key_file = "{{ vault_tls_config_path }}/{{ vault_tls_key_file }}"
   tls_min_version  = "{{ vault_tls_min_version }}"
-  {% if vault_tls_cipher_suites is defined -%}
-  tls_cipher_suites = "{{ vault_tls_cipher_suites }}"
-  {% endif -%}
-  {% if tls_prefer_server_cipher_suites is defined -%}
-  tls_prefer_server_cipher_suites = "{{ vault_tls_prefer_server_cipher_suites }}"
-  {% endif -%}
-  {% if (vault_tls_require_and_verify_client_cert | bool) -%}
   tls_require_and_verify_client_cert = "{{ vault_tls_require_and_verify_client_cert | bool | lower}}"
-  {% endif -%}
-  {% if (vault_tls_disable_client_certs | bool) -%}
   tls_disable_client_certs = "{{ vault_tls_disable_client_certs | bool | lower}}"
-  {% endif -%}
-  {% endif -%}
-  tls_disable = "{{ vault_tls_disable | bool | lower }}"
+  {% endif %}
 }
-
-{% if vault_telemetry | bool -%}
-  {% include vault_telemetry_conf with context %}
-{% endif %}
 
 storage "raft" {
-  path = "{{ vault_data_path }}"
+
+  path = "{{ vault_raft_data_path }}"
   node_id = "{{ vault_raft_node_id }}"
+  {% if vault_raft_performance_multiplier is defined and vault_raft_performance_multiplier -%}
+  performance_multiplier = "{{ vault_raft_performance_multiplier }}"
+  {% endif %}
+  {% if vault_raft_trailing_logs is defined and vault_raft_trailing_logs %}
+  trailing_logs = "{{ vault_raft_trailing_logs }}"
+  {% endif %}
+  {% if vault_raft_snapshot_threshold is defined and vault_raft_snapshot_threshold %}
+  snapshot_threshold = "{{ vault_raft_snapshot_threshold }}"
+  {% endif %}
+  {% if vault_raft_max_entry_size is defined and vault_raft_max_entry_size %}
+  max_entry_size = "{{ vault_raft_max_entry_size }}"
+  {% endif %}
+  {% if vault_raft_autopilot_reconcile_interval is defined and vault_raft_autopilot_reconcile_interval %}
+  autopilot_reconcile_interval = "{{ vault_raft_autopilot_reconcile_interval }}"
+  {% endif %}
+
+  {% for peer in vault_raft_cluster_members -%}
+  retry_join {
+    leader_api_addr = "{{ vault_protocol }}://{{ peer }}:{{ vault_port }}"
+    {% if vault_tls_ca_file is defined -%}
+    leader_ca_cert_file = "{{ vault_tls_config_path }}/{{ vault_tls_ca_file }}"
+    {% endif %}
+    {% if vault_raft_leader_tls_servername is defined and vault_client_tls_cert_file is defined -%}
+    leader_tls_servername = "{{ vault_raft_leader_tls_servername }}"
+    leader_client_cert_file = "{{ vault_tls_config_path }}/{{ vault_client_tls_cert_file }}"
+    leader_client_key_file = "{{ vault_tls_config_path }}/{{ vault_client_tls_key_file }}"
+    {% endif %}
+  }
+  {% endfor %}
+
 }
 
-{% if vault_ui -%}
+// HashiCorp recommends disabling mlock when using Raft.
+disable_mlock = {{ vault_disable_mlock | default('true') | bool | lower }}
+
 ui = {{ vault_ui | bool | lower }}
-{% endif %}
-
-{% if vault_auto_unseal | bool -%}
-{% if vault_awskms | bool -%}
-  {% include vault_awskms_backend with context %}
-{% endif %}
-{% endif %}
-
-{% if vault_consul_registration | bool -%}
-service_registration "consul" {
-  address = "{{ consul_server_address }}:{{ consul_server_port }}"
-  scheme  = "{{ consul_server_scheme }}"
-  service = "{{ vault_service_name }}"
-  token   = "{{ consul_token }}"
-}
-{% endif %}

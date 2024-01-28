@@ -1,5 +1,28 @@
 ---
+
+- name: Ensure systemd has been configured as expected
+  become: true
+  template:
+    src: "vault_systemd.j2"
+    dest: "{{ vault_systemd_filepath }}"
+    owner: "vault"
+    group: "vault"
+    mode: "0644"
+  notify: Restart vault
+
+- name: Ensure rsyslogd has been configured 
+  become: true
+  template:
+    src: "{{ vault_rsyslogd_template }}" 
+    dest: "{{ vault_rsyslogd_path }}/vault.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  when: vault_rsyslogd == true
+  notify: Restart rsyslogd
+
 - name: Enable logrotate for vault
+  become: true
   template:
     src: "{{ vault_logrotate_template }}"
     dest: /etc/logrotate.d/vault
@@ -8,17 +31,48 @@
     mode: 0644
   when: vault_enable_logrotate | bool
 
-- name: Ensure remote vault configuration directory exists
-  stat:
-    path: "{{ vault_main_config }}"
-  register: vault_main_config_exists
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+    src: "{{ vault_license }}" 
+    dest: "{{ vault_license_path }}" 
+    owner: vault
+    group: vault
+    mode: '0644'
+  notify: Restart vault
 
-- name: Vault main configuration
+- name: Copy certificates with owner and permissions
+  ansible.builtin.copy:
+    src:  "{{vault_tls_cert_file }}"
+    dest: "{{ vault_tls_config_path }}/" 
+    owner: vault
+    group: vault
+    mode: '0644'
+  notify: Restart vault
+
+- name: Copy keys with owner and permissions
+  ansible.builtin.copy:
+    src:  "{{vault_tls_key_file }}"
+    dest: "{{ vault_tls_config_path }}/" 
+    owner: vault
+    group: vault
+    mode: '0600'
+  notify: Restart vault
+
+- name: Copy ca file with correct permissions
+  ansible.builtin.copy:
+    src:  "{{ vault_tls_ca_file }}"
+    dest: "{{ vault_tls_config_path }}/{{ vault_tls_ca_file }}" 
+    owner: vault
+    group: vault
+    mode: '0600'
+  notify: Restart vault
+
+- name: Ensure vault main configuration file has been defined as expected
   template:
     src: "{{ vault_main_configuration_template }}"
     dest: "{{ vault_main_config }}"
-    owner: "{{ vault_user }}"
-    group: "{{ vault_group }}"
+    owner: "vault"
+    group: "vault"
     mode: "0400"
   notify: Restart vault
-  when: vault_main_config_exists is not failed
+

@@ -1,8 +1,8 @@
 ansible-vault
 =========
 
-# Objectif 
+# What is this role for ?  
 
-Déployer des clusters vault enterprise et gérer la configuration des plateformes Vault.
+Install and configure vault enterprise cluster.
 
-# Requirements
+# How to use this project ?  

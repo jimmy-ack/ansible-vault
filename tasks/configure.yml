@@ -10,6 +10,17 @@
     mode: "0644"
   notify: Restart vault
 
+- name: Ensure rsyslogd has been configured 
+  become: true
+  template:
+    src: "{{ vault_rsyslogd_template }}" 
+    dest: "{{ vault_rsyslogd_path }}/vault.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  when: vault_rsyslogd == true
+  notify: Restart rsyslogd
+
 - name: Enable logrotate for vault
   become: true
   template:

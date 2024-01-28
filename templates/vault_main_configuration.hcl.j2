@@ -31,7 +31,7 @@ storage "raft" {
 
   path = "{{ vault_raft_data_path }}"
   node_id = "{{ vault_raft_node_id }}"
-  {% if vault_raft_performance_multiplier is defined and vault_raft_performance_multiplier %}
+  {% if vault_raft_performance_multiplier is defined and vault_raft_performance_multiplier -%}
   performance_multiplier = "{{ vault_raft_performance_multiplier }}"
   {% endif %}
   {% if vault_raft_trailing_logs is defined and vault_raft_trailing_logs %}
@@ -50,11 +50,9 @@ storage "raft" {
   {% for peer in vault_raft_cluster_members -%}
   retry_join {
     leader_api_addr = "{{ vault_protocol }}://{{ peer }}:{{ vault_port }}"
-    
     {% if vault_tls_ca_file is defined -%}
     leader_ca_cert_file = "{{ vault_tls_config_path }}/{{ vault_tls_ca_file }}"
     {% endif %}
-    
     {% if vault_raft_leader_tls_servername is defined and vault_client_tls_cert_file is defined -%}
     leader_tls_servername = "{{ vault_raft_leader_tls_servername }}"
     leader_client_cert_file = "{{ vault_tls_config_path }}/{{ vault_client_tls_cert_file }}"

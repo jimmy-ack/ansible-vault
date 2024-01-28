@@ -22,6 +22,7 @@ vault_data_path: "/opt/vault"
 vault_plugin_path: "{{ vault_data_path }}/plugins" 
 vault_license_path: "{{ vault_data_path }}/vault.hclic"
 vault_raft_data_path: "{{ vault_data_path }}/data/raft"
+vault_snapshots_path: "{{ vault_data_path }}/data/snapshots" # Leave empty to avoid automatic snapshots directory creation
 
 # Global settings
 vault_env: "dev"

@@ -35,6 +35,16 @@
     owner: vault
     group: vault
 
+- name: Ensure local snapshots directory has been created
+  become: true
+  ansible.builtin.file:
+    path: "{{ vault_snapshots_path }}" 
+    state: directory
+    mode: '0755'
+    owner: vault
+    group: vault
+  when: vault_snapshots_path is defined
+
 - name: Ensure vault log directory has been created
   become: true
   ansible.builtin.file:

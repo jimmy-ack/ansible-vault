@@ -36,7 +36,7 @@ vault_default_lease_ttl: "768h"
 vault_disable_mlock: true
 
 # Proxy settings > https://developer.hashicorp.com/vault/tutorials/operations/configure-vault#http_proxy 
-vault_enable_proxy: true # define to true to enable proxy usage
+vault_enable_proxy: false # define to true to enable proxy usage
 vault_http_proxy: "http://myproxy.acknowledge.local:8080"
 vault_https_proxy: "{{ vault_http_proxy }}" # define explicitly if different than http_proxy
 vault_no_proxy: "*.acknowledge.local" # no proxy configuration 

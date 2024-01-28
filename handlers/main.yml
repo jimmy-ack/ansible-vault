@@ -1,7 +1,10 @@
 ---
-- name: Restart vault
+- name: Restart vault 
   become: true
-  service: name=vault state=restarted
+  ansible.builtin.systemd_service:
+    name: vault 
+    daemon_reload: true
+    state: restarted
 
 - name: Restart rsyslogd
   become: true
